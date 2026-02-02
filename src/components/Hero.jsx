@@ -1,15 +1,14 @@
 import { useEffect, useMemo, useState } from "react";
-import cvPdf from "../assets/Zahraa_Salim_CV.pdf"; // PDF file to show in modal
+import cvPdf from "../assets/Zahraa_Salim_CV.pdf"; // ✅ adjust path if needed
 
 export default function Hero() {
-  // Profile image fallback: if image fails, show initials instead
   const [imgOk, setImgOk] = useState(true);
 
+  // Update these (real links)
   const email = "zahraa.salim01@gmail.com";
   const githubUrl = "https://github.com/Zahraa-Salim";
   const linkedinUrl = "https://www.linkedin.com/in/zahraa-salim/";
 
-  // Stable list of roles for the typewriter animation
   const roles = useMemo(
     () => [
       "Full-Stack Developer",
@@ -20,15 +19,13 @@ export default function Hero() {
     []
   );
 
-  // Typewriter states
   const [roleIndex, setRoleIndex] = useState(0);
   const [typed, setTyped] = useState("");
   const [deleting, setDeleting] = useState(false);
 
-  // CV modal open/close state
+  // ✅ CV modal state
   const [cvOpen, setCvOpen] = useState(false);
 
-  // Typewriter effect: type -> pause -> delete -> next role
   useEffect(() => {
     const current = roles[roleIndex];
     const speed = deleting ? 35 : 55;
@@ -54,7 +51,7 @@ export default function Hero() {
   const openCv = () => setCvOpen(true);
   const closeCv = () => setCvOpen(false);
 
-  // Close modal on Escape (only while open)
+  // Close on ESC (only when modal open)
   useEffect(() => {
     if (!cvOpen) return;
     const onKey = (e) => {
@@ -64,7 +61,7 @@ export default function Hero() {
     return () => window.removeEventListener("keydown", onKey);
   }, [cvOpen]);
 
-  // Lock background scroll + add modal-open class (helps Navbar hide)
+  // ✅ Prevent background scroll + hide navbar while modal open
   useEffect(() => {
     if (!cvOpen) return;
 
@@ -82,11 +79,13 @@ export default function Hero() {
     <section id="hero" className="bg-bg">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 py-10 sm:py-14">
         <div className="relative overflow-visible rounded-[36px] bg-bg border border-primary/30 shadow-sm">
+          {/* blobs */}
           <div className="pointer-events-none absolute -top-20 -right-24 h-72 w-72 rounded-full bg-primary/18 blur-3xl" />
           <div className="pointer-events-none absolute -bottom-24 -left-24 h-72 w-72 rounded-full bg-primary/14 blur-3xl" />
 
+          {/* Give room for the avatar that sits on the border (MOBILE ONLY) */}
           <div className="relative overflow-visible px-7 pb-7 pt-14 sm:p-10">
-            {/* Mobile avatar */}
+            {/* ✅ MOBILE avatar */}
             <div className="sm:hidden absolute left-1/2 top-0 -translate-x-1/2 -translate-y-1/2">
               {imgOk ? (
                 <img
@@ -104,9 +103,10 @@ export default function Hero() {
               )}
             </div>
 
+            {/* Title + typewriter + location */}
             <div className="w-full">
               <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3">
-                {/* Desktop avatar + name + typewriter */}
+                {/* ✅ LEFT: Desktop avatar beside name + text */}
                 <div className="flex flex-col sm:flex-row sm:items-center gap-4">
                   <div className="hidden sm:block">
                     {imgOk ? (
@@ -161,10 +161,12 @@ export default function Hero() {
               </div>
             </div>
 
+            {/* Divider */}
             <div className="mt-6 sm:mt-7 h-px w-full bg-primary/25" />
 
             {/* Content */}
             <div className="mt-7 grid gap-8 lg:grid-cols-2 lg:items-start">
+              {/* Left */}
               <div className="space-y-5 sm:space-y-6">
                 <p className="text-lg text-textmain leading-relaxed">
                   I build real products across mobile and web:{" "}
@@ -177,6 +179,7 @@ export default function Hero() {
                   “Clean architecture + calm UI = apps that scale and feel good to use.”
                 </p>
 
+                {/* Specialty */}
                 <div className="w-full flex items-center gap-3 rounded-2xl border border-primary/25 bg-bg px-5 py-4">
                   <span className="w-10 h-10 rounded-xl bg-primary/15 border border-primary/25" />
                   <div>
@@ -187,8 +190,10 @@ export default function Hero() {
                   </div>
                 </div>
 
+                {/* Actions */}
                 <div className="pt-2">
                   <div className="flex flex-wrap items-center justify-between sm:justify-start gap-2 w-full">
+                    {/* ✅ View CV button */}
                     <button
                       type="button"
                       onClick={openCv}
@@ -263,14 +268,81 @@ export default function Hero() {
                 </div>
               </div>
 
-              {/* Right side cards unchanged... */}
-              {/* ... (rest of your JSX stays exactly as you wrote it) */}
+              {/* Right */}
+              <div className="space-y-4">
+                {/* Desktop cards */}
+                <div className="hidden sm:grid gap-3">
+                  <div className="rounded-2xl bg-bg border border-primary/20 p-5 hover:bg-primary/10 transition">
+                    <p className="text-sm text-muted">Focus</p>
+                    <p className="font-semibold text-textmain">Full-Stack (Mobile + Web)</p>
+                  </div>
+
+                  <div className="rounded-2xl bg-bg border border-primary/20 p-5 hover:bg-primary/10 transition">
+                    <p className="text-sm text-muted">Stack</p>
+                    <p className="font-semibold text-textmain">
+                      Flutter • React • Laravel • Firebase
+                    </p>
+                  </div>
+
+                  <div className="rounded-2xl bg-bg border border-primary/20 p-5 hover:bg-primary/10 transition">
+                    <p className="text-sm text-muted">Strengths</p>
+                    <p className="font-semibold text-textmain">
+                      Clean architecture • UX • Maintainable code
+                    </p>
+                  </div>
+
+                  <a
+                    href="#projects"
+                    className="rounded-2xl bg-primary/10 border border-primary/25 p-5 hover:bg-primary/15 transition"
+                  >
+                    <p className="text-sm text-muted">Featured</p>
+                    <p className="font-semibold text-textmain">
+                      Skill Exchange (Flutter + Firebase)
+                    </p>
+                    <p className="text-sm text-muted mt-1">
+                      Auth, profiles, posts, requests, real-time data
+                    </p>
+                  </a>
+                </div>
+
+                {/* Mobile chips */}
+                <div className="sm:hidden">
+                  <div className="grid grid-cols-2 gap-3">
+                    <div className="rounded-2xl border border-primary/25 bg-primary/10 p-4">
+                      <p className="text-xs text-muted">Focus</p>
+                      <p className="font-semibold text-textmain">Full-Stack</p>
+                    </div>
+                    <div className="rounded-2xl border border-primary/25 bg-primary/10 p-4">
+                      <p className="text-xs text-muted">Mobile</p>
+                      <p className="font-semibold text-textmain">Flutter</p>
+                    </div>
+                    <div className="rounded-2xl border border-primary/25 bg-primary/10 p-4">
+                      <p className="text-xs text-muted">Web</p>
+                      <p className="font-semibold text-textmain">React</p>
+                    </div>
+                    <div className="rounded-2xl border border-primary/25 bg-primary/10 p-4">
+                      <p className="text-xs text-muted">Backend</p>
+                      <p className="font-semibold text-textmain">Laravel</p>
+                    </div>
+                  </div>
+
+                  <a
+                    href="#projects"
+                    className="mt-3 block rounded-2xl border border-primary/25 bg-bg p-4 hover:bg-primary/10 transition"
+                  >
+                    <p className="text-xs text-muted">Featured</p>
+                    <p className="font-semibold text-textmain">Skill Exchange App</p>
+                  </a>
+                </div>
+              </div>
             </div>
+
+            {/* end */}
           </div>
         </div>
       </div>
 
-      {/* CV Modal */}
+      {/* ✅ CV MODAL (white background) */}
       {cvOpen && (
         <div
           className="fixed inset-0 z-[10000] bg-black/40"
@@ -292,13 +364,11 @@ export default function Hero() {
             >
               <div className="h-1 bg-gradient-to-r from-primary/60 via-primary/20 to-transparent" />
 
+              {/* Header */}
               <div className="flex items-center justify-between gap-4 p-5 sm:p-6 border-b border-primary/15">
                 <div className="min-w-0">
                   <p className="text-xs text-muted">Document</p>
-                  <h3
-                    id="cv-title"
-                    className="text-lg sm:text-xl font-semibold text-textmain truncate"
-                  >
+                  <h3 id="cv-title" className="text-lg sm:text-xl font-semibold text-textmain truncate">
                     Zahraa Salim — CV
                   </h3>
                 </div>
@@ -322,6 +392,7 @@ export default function Hero() {
                 </div>
               </div>
 
+              {/* PDF viewer */}
               <div className="flex-1 min-h-0">
                 <iframe
                   title="CV"
