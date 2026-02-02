@@ -1,0 +1,57 @@
+@config "../tailwind.config.cjs";
+@import "tailwindcss";
+
+:root {
+  --bg: 241 243 224;
+  --surface: 210 220 182;
+  --primary: 161 188 152;
+  --textmain: 47 58 44;
+  --muted: 119 136 115;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+section { scroll-margin-top: 84px; }
+html, body {
+  width: 100%;
+  overflow-x: hidden;
+  background: rgb(var(--bg));
+}
+
+/* Always allow vertical scrolling by default */
+body {
+  overflow-x: hidden;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch; /* smoother mobile scroll */
+}
+
+/* Only lock scroll when a modal is actually open */
+body.modal-open {
+  overflow: hidden !important;
+  touch-action: none;
+}
+
+html,
+body {
+  height: 100%;
+  overflow-x: hidden;
+}
+
+body {
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch; /* iOS momentum */
+  touch-action: pan-y;               /* allow vertical scroll */
+}
+
+/* React root sometimes breaks scrolling if it gets overflow hidden */
+#root {
+  min-height: 100%;
+  overflow: visible;
+  touch-action: pan-y;
+}
+
+/* NEVER put touch-action:none globally */
+* {
+  -webkit-tap-highlight-color: transparent;
+}
