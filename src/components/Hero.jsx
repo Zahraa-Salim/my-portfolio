@@ -74,9 +74,8 @@ export default function Hero() {
       document.body.classList.remove("modal-open");
     };
   }, [cvOpen]);
-
   return (
-    <section id="hero" className="bg-bg">
+    <section id="hero" className="bg-bg pt-[88px] sm:pt-[56px]">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 py-10 sm:py-14">
         <div className="relative overflow-visible rounded-[36px] bg-bg border border-primary/30 shadow-sm">
           {/* blobs */}
@@ -84,7 +83,7 @@ export default function Hero() {
           <div className="pointer-events-none absolute -bottom-24 -left-24 h-72 w-72 rounded-full bg-primary/14 blur-3xl" />
 
           {/* Give room for the avatar that sits on the border (MOBILE ONLY) */}
-          <div className="relative overflow-visible px-7 pb-7 pt-14 sm:p-10">
+          <div className="relative overflow-visible px-7 pb-7 pt-16 sm:p-10">
             {/* ✅ MOBILE avatar */}
             <div className="sm:hidden absolute left-1/2 top-0 -translate-x-1/2 -translate-y-1/2">
               {imgOk ? (
@@ -181,7 +180,6 @@ export default function Hero() {
 
                 {/* Specialty */}
                 <div className="w-full flex items-center gap-3 rounded-2xl border border-primary/25 bg-bg px-5 py-4">
-                  <span className="w-10 h-10 rounded-xl bg-primary/15 border border-primary/25" />
                   <div>
                     <p className="text-sm text-muted">Specialty</p>
                     <p className="font-semibold text-textmain">

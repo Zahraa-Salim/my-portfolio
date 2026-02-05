@@ -570,56 +570,31 @@ export default function Projects() {
                             remarkPlugins={[remarkGfm]}
                             skipHtml
                             components={{
-                              a: (p) => (
+                              a: ({ node, ...props }) => (
                                 <a
                                   className="text-textmain underline underline-offset-4 hover:opacity-80"
                                   target="_blank"
                                   rel="noreferrer"
-                                  {...p}
+                                  {...props}
                                 />
                               ),
                               h1: (p) => (
-                                <h1
-                                  className="text-xl sm:text-2xl font-bold text-textmain mt-2 mb-3"
-                                  {...p}
-                                />
+                                <h1 className="text-xl sm:text-2xl font-bold text-textmain mt-2 mb-3" {...p} />
                               ),
                               h2: (p) => (
-                                <h2
-                                  className="text-lg sm:text-xl font-semibold text-textmain mt-6 mb-3"
-                                  {...p}
-                                />
+                                <h2 className="text-lg sm:text-xl font-semibold text-textmain mt-6 mb-3" {...p} />
                               ),
                               h3: (p) => (
-                                <h3
-                                  className="text-base sm:text-lg font-semibold text-textmain mt-5 mb-2"
-                                  {...p}
-                                />
+                                <h3 className="text-base sm:text-lg font-semibold text-textmain mt-5 mb-2" {...p} />
                               ),
                               p: (p) => (
-                                <p
-                                  className="text-sm sm:text-[15px] text-muted leading-relaxed my-3 whitespace-pre-wrap"
-                                  {...p}
-                                />
+                                <p className="text-sm sm:text-[15px] text-muted leading-relaxed my-3 whitespace-pre-wrap" {...p} />
                               ),
                               ul: (p) => (
-                                <ul
-                                  className="list-disc pl-6 text-sm sm:text-[15px] text-muted my-3 space-y-1"
-                                  {...p}
-                                />
+                                <ul className="list-disc pl-6 text-sm sm:text-[15px] text-muted my-3 space-y-1" {...p} />
                               ),
                               ol: (p) => (
-                                <ol
-                                  className="list-decimal pl-6 text-sm sm:text-[15px] text-muted my-3 space-y-1"
-                                  {...p}
-                                />
-                              ),
-                              a: (p) => (
-                                <a
-                                  className="text-textmain underline underline-offset-4 hover:opacity-80"
-                                  rel="noreferrer"
-                                  {...p}
-                                />
+                                <ol className="list-decimal pl-6 text-sm sm:text-[15px] text-muted my-3 space-y-1" {...p} />
                               ),
                               code: ({ inline, className, children, ...props }) =>
                                 inline ? (
@@ -637,15 +612,13 @@ export default function Projects() {
                                   </pre>
                                 ),
                               blockquote: (p) => (
-                                <blockquote
-                                  className="border-l-4 border-primary/30 pl-4 my-4 text-muted italic"
-                                  {...p}
-                                />
+                                <blockquote className="border-l-4 border-primary/30 pl-4 my-4 text-muted italic" {...p} />
                               ),
                             }}
                           >
                             {readmeMd}
                           </ReactMarkdown>
+
                         </div>
                       )}
                     </div>
