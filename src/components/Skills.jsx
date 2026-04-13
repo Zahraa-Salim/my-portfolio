@@ -3,7 +3,8 @@ import { useEffect, useMemo, useRef, useState } from "react";
 function Chip({ children }) {
   // Small pill UI for each skill
   return (
-    <span className="inline-flex items-center rounded-full border border-primary/25 bg-primary/10 px-4 py-2 text-sm font-medium text-textmain hover:bg-primary/15 transition">
+    <span className="inline-flex items-center rounded-full border border-primary/25 bg-primary/10 px-4 py-2 text-sm font-medium text-textmain
+      hover:bg-primary/15 hover:scale-[1.03] hover:shadow-sm transition-all duration-200 cursor-default">
       {children}
     </span>
   );
@@ -55,7 +56,7 @@ export default function Skills() {
       {
         title: "Frontend",
         subtitle: "UI, components, styling, and interactions",
-        items: ["React", "JavaScript", "Tailwind CSS", "HTML5", "CSS3", "Responsive UI", "REST API Integration"],
+        items: ["React", "Vue.js", "Next.js", "JavaScript", "Tailwind CSS", "HTML5", "CSS3", "Responsive UI", "REST API Integration"],
       },
       {
         title: "Mobile",
@@ -65,7 +66,7 @@ export default function Skills() {
       {
         title: "Backend",
         subtitle: "APIs, data, and server-side structure",
-        items: ["Laravel", "PHP", "REST APIs", "MySQL / SQL", "Authentication", "CRUD Systems", "MVC Pattern"],
+        items: ["Laravel", "PHP", "Express.js", "REST APIs", "MySQL / SQL", "PostgreSQL", "Supabase", "Authentication", "CRUD Systems", "MVC Pattern"],
       },
       {
         title: "Tools",

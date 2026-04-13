@@ -1,27 +1,18 @@
-import { useEffect, useRef, useState } from "react";
+import { motion } from "framer-motion";
+
+const fadeUp = {
+  initial: { opacity: 0, y: 24 },
+  whileInView: { opacity: 1, y: 0 },
+  viewport: { once: true, margin: "-60px" },
+};
+
+const tr = (delay) => ({
+  duration: 0.6,
+  delay,
+  ease: [0.25, 0.46, 0.45, 0.94],
+});
 
 export default function Contact() {
-  const sectionRef = useRef(null);
-  const [inView, setInView] = useState(false);
-
-  useEffect(() => {
-    const el = sectionRef.current;
-    if (!el) return;
-
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          setInView(true);
-          observer.disconnect();
-        }
-      },
-      { threshold: 0.18 }
-    );
-
-    observer.observe(el);
-    return () => observer.disconnect();
-  }, []);
-
   return (
     <section id="contact" className="bg-bg relative overflow-hidden">
       <div className="pointer-events-none absolute inset-0">
@@ -29,32 +20,29 @@ export default function Contact() {
         <div className="absolute -bottom-28 -left-28 h-96 w-96 rounded-full bg-primary/10 blur-3xl" />
       </div>
 
-      <div
-        ref={sectionRef}
-        className={`relative max-w-4xl mx-auto px-4 sm:px-6 py-16 transition-all duration-700 ease-out
-          ${inView ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"}
-        `}
-      >
+      <div className="relative max-w-4xl mx-auto px-4 sm:px-6 py-16">
         {/* Header */}
-        <div className="text-center">
+        <motion.div {...fadeUp} transition={tr(0)} className="text-center">
           <p className="text-sm text-muted">Contact</p>
           <h2 className="text-2xl sm:text-3xl font-bold text-textmain mt-2">
-            Let’s work together
+            Let's work together
           </h2>
           <p className="text-sm sm:text-base text-muted mt-3 max-w-xl mx-auto leading-relaxed">
-            I’m open to internships, junior developer roles, and freelance projects.
-            Feel free to reach out — I’d love to connect.
+            I'm open to internships, junior developer roles, and freelance projects.
+            Feel free to reach out — I'd love to connect.
           </p>
           <div className="w-16 h-1 bg-primary rounded-full mt-4 mx-auto" />
-        </div>
+        </motion.div>
 
         {/* Contact methods */}
         <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4">
-
           {/* Email */}
-          <a
+          <motion.a
+            {...fadeUp}
+            transition={tr(0.15)}
+            whileHover={{ y: -4, boxShadow: "0 8px 20px -4px rgba(161,188,152,0.25)" }}
             href="mailto:zahraa.salim01@gmail.com"
-            className="w-full sm:w-auto flex items-center justify-center gap-2 rounded-xl bg-primary text-white font-medium px-6 py-3 shadow-sm hover:opacity-90 transition"
+            className="w-full sm:w-auto flex items-center justify-center gap-2 rounded-xl bg-primary text-white font-medium px-6 py-3 shadow-sm transition"
           >
             <svg
               viewBox="0 0 24 24"
@@ -70,14 +58,17 @@ export default function Contact() {
               <path d="m4 7 8 6 8-6" />
             </svg>
             Send Email
-          </a>
+          </motion.a>
 
           {/* LinkedIn */}
-          <a
+          <motion.a
+            {...fadeUp}
+            transition={tr(0.25)}
+            whileHover={{ y: -4, boxShadow: "0 8px 20px -4px rgba(161,188,152,0.15)" }}
             href="https://www.linkedin.com/in/zahraa-salim/"
             target="_blank"
             rel="noreferrer"
-            className="w-full sm:w-auto flex items-center justify-center gap-2 rounded-xl border border-primary/30 px-6 py-3 text-textmain hover:bg-primary/10 transition"
+            className="w-full sm:w-auto flex items-center justify-center gap-2 rounded-xl border border-primary/30 px-6 py-3 text-textmain transition"
           >
             <svg
               viewBox="0 0 24 24"
@@ -94,14 +85,17 @@ export default function Contact() {
               <path d="M10 21v-7a4 4 0 0 1 8 0v7" />
             </svg>
             LinkedIn Profile
-          </a>
+          </motion.a>
 
           {/* GitHub */}
-          <a
+          <motion.a
+            {...fadeUp}
+            transition={tr(0.35)}
+            whileHover={{ y: -4, boxShadow: "0 8px 20px -4px rgba(161,188,152,0.15)" }}
             href="https://github.com/Zahraa-Salim"
             target="_blank"
             rel="noreferrer"
-            className="w-full sm:w-auto flex items-center justify-center gap-2 rounded-xl border border-primary/30 px-6 py-3 text-textmain hover:bg-primary/10 transition"
+            className="w-full sm:w-auto flex items-center justify-center gap-2 rounded-xl border border-primary/30 px-6 py-3 text-textmain transition"
           >
             <svg viewBox="0 0 24 24" className="w-5 h-5" aria-hidden="true">
               <path
@@ -110,7 +104,7 @@ export default function Contact() {
               />
             </svg>
             GitHub Projects
-          </a>
+          </motion.a>
         </div>
       </div>
     </section>

@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm run:*)",
+      "Bash(npm install:*)",
+      "Bash(node -e \"require\\(''puppeteer-core''\\); require\\(''@sparticuz/chromium''\\); console.log\\(''Both packages installed OK''\\)\")"
+    ]
+  }
+}

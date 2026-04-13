@@ -19,14 +19,17 @@ html, body {
   background: rgb(var(--bg));
 }
 
-/* Always allow vertical scrolling by default */
 body {
   overflow-x: hidden;
   overflow-y: auto;
-  -webkit-overflow-scrolling: touch; /* smoother mobile scroll */
+  -webkit-overflow-scrolling: touch;
+  cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 20 20'%3E%3Ccircle cx='10' cy='10' r='4' fill='none' stroke='rgb(161,188,152)' stroke-width='1.5'/%3E%3Ccircle cx='10' cy='10' r='1.5' fill='rgb(47,58,44)'/%3E%3C/svg%3E") 10 10, auto;
 }
 
-/* Only lock scroll when a modal is actually open */
+a, button, [role="button"], input[type="submit"], select, summary {
+  cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24'%3E%3Ccircle cx='12' cy='12' r='5' fill='none' stroke='rgb(161,188,152)' stroke-width='1.5'/%3E%3Ccircle cx='12' cy='12' r='2' fill='rgb(47,58,44)'/%3E%3C/svg%3E") 12 12, pointer;
+}
+
 body.modal-open {
   overflow: hidden !important;
   touch-action: none;
@@ -40,18 +43,69 @@ body {
 
 body {
   overflow-y: auto;
-  -webkit-overflow-scrolling: touch; /* iOS momentum */
-  touch-action: pan-y;               /* allow vertical scroll */
+  -webkit-overflow-scrolling: touch;
+  touch-action: pan-y;
 }
 
-/* React root sometimes breaks scrolling if it gets overflow hidden */
 #root {
   min-height: 100%;
   overflow: visible;
   touch-action: pan-y;
 }
 
-/* NEVER put touch-action:none globally */
 * {
   -webkit-tap-highlight-color: transparent;
+}
+
+/* ── Global page scrollbar ── */
+html {
+  scrollbar-width: thin;
+  scrollbar-color: rgb(161 188 152 / 0.5) transparent;
+}
+
+html::-webkit-scrollbar {
+  width: 8px;
+}
+
+html::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+html::-webkit-scrollbar-thumb {
+  background: rgb(161 188 152 / 0.4);
+  border-radius: 999px;
+}
+
+html::-webkit-scrollbar-thumb:hover {
+  background: rgb(161 188 152 / 0.6);
+}
+
+/* ── Styled scrollbar (modal, etc.) ── */
+.styled-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: rgb(var(--primary)) transparent;
+}
+
+.styled-scrollbar::-webkit-scrollbar {
+  width: 6px;
+}
+
+.styled-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+  margin: 8px 0;
+}
+
+.styled-scrollbar::-webkit-scrollbar-thumb {
+  background: rgb(var(--primary) / 0.4);
+  border-radius: 999px;
+}
+
+.styled-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: rgb(var(--primary) / 0.6);
+}
+
+/* ── Smooth fade-slide-up utility ── */
+@keyframes fadeSlideUp {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0); }
 }

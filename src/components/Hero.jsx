@@ -1,10 +1,22 @@
 import { useEffect, useMemo, useState } from "react";
-import cvPdf from "../assets/Zahraa_Salim_CV.pdf"; // ✅ adjust path if needed
+import { motion } from "framer-motion";
+import { Link } from "react-router-dom";
+import cvPdf from "../assets/Zahraa_Salim_CV.pdf";
+
+const fadeUp = (delay = 0) => ({
+  initial: { opacity: 0, y: 20 },
+  animate: { opacity: 1, y: 0 },
+  transition: { duration: 0.6, delay, ease: [0.25, 0.46, 0.45, 0.94] },
+});
+
+const cardHover = {
+  whileHover: { y: -4, boxShadow: "0 8px 24px -4px rgba(161,188,152,0.2)" },
+  transition: { type: "spring", stiffness: 300, damping: 20 },
+};
 
 export default function Hero() {
   const [imgOk, setImgOk] = useState(true);
 
-  // Update these (real links)
   const email = "zahraa.salim01@gmail.com";
   const githubUrl = "https://github.com/Zahraa-Salim";
   const linkedinUrl = "https://www.linkedin.com/in/zahraa-salim/";
@@ -22,14 +34,11 @@ export default function Hero() {
   const [roleIndex, setRoleIndex] = useState(0);
   const [typed, setTyped] = useState("");
   const [deleting, setDeleting] = useState(false);
-
-  // ✅ CV modal state
   const [cvOpen, setCvOpen] = useState(false);
 
   useEffect(() => {
     const current = roles[roleIndex];
     const speed = deleting ? 35 : 55;
-
     const t = window.setTimeout(() => {
       if (!deleting) {
         const next = current.slice(0, typed.length + 1);
@@ -44,14 +53,12 @@ export default function Hero() {
         }
       }
     }, speed);
-
     return () => window.clearTimeout(t);
   }, [typed, deleting, roleIndex, roles]);
 
   const openCv = () => setCvOpen(true);
   const closeCv = () => setCvOpen(false);
 
-  // Close on ESC (only when modal open)
   useEffect(() => {
     if (!cvOpen) return;
     const onKey = (e) => {
@@ -61,31 +68,39 @@ export default function Hero() {
     return () => window.removeEventListener("keydown", onKey);
   }, [cvOpen]);
 
-  // ✅ Prevent background scroll + hide navbar while modal open
   useEffect(() => {
     if (!cvOpen) return;
-
     const prevOverflow = document.body.style.overflow;
     document.body.style.overflow = "hidden";
     document.body.classList.add("modal-open");
-
     return () => {
       document.body.style.overflow = prevOverflow;
       document.body.classList.remove("modal-open");
     };
   }, [cvOpen]);
+
   return (
     <section id="hero" className="bg-bg pt-[88px] sm:pt-[56px]">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 py-10 sm:py-14">
         <div className="relative overflow-visible rounded-[36px] bg-bg border border-primary/30 shadow-sm">
-          {/* blobs */}
-          <div className="pointer-events-none absolute -top-20 -right-24 h-72 w-72 rounded-full bg-primary/18 blur-3xl" />
-          <div className="pointer-events-none absolute -bottom-24 -left-24 h-72 w-72 rounded-full bg-primary/14 blur-3xl" />
+          {/* blobs with subtle animation */}
+          <motion.div
+            className="pointer-events-none absolute -top-20 -right-24 h-72 w-72 rounded-full bg-primary/18 blur-3xl"
+            animate={{ scale: [1, 1.08, 1], x: [0, 8, 0] }}
+            transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
+          />
+          <motion.div
+            className="pointer-events-none absolute -bottom-24 -left-24 h-72 w-72 rounded-full bg-primary/14 blur-3xl"
+            animate={{ scale: [1, 1.06, 1], y: [0, -8, 0] }}
+            transition={{ duration: 10, repeat: Infinity, ease: "easeInOut" }}
+          />
 
-          {/* Give room for the avatar that sits on the border (MOBILE ONLY) */}
           <div className="relative overflow-visible px-7 pb-7 pt-16 sm:p-10">
-            {/* ✅ MOBILE avatar */}
-            <div className="sm:hidden absolute left-1/2 top-0 -translate-x-1/2 -translate-y-1/2">
+            {/* MOBILE avatar */}
+            <motion.div
+              {...fadeUp(0)}
+              className="sm:hidden absolute left-1/2 top-0 -translate-x-1/2 -translate-y-1/2"
+            >
               {imgOk ? (
                 <img
                   src="/profile.png"
@@ -100,13 +115,13 @@ export default function Hero() {
                   ZS
                 </div>
               )}
-            </div>
+            </motion.div>
 
             {/* Title + typewriter + location */}
             <div className="w-full">
               <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3">
-                {/* ✅ LEFT: Desktop avatar beside name + text */}
-                <div className="flex flex-col sm:flex-row sm:items-center gap-4">
+                {/* LEFT: Desktop avatar beside name */}
+                <motion.div {...fadeUp(0.1)} className="flex flex-col sm:flex-row sm:items-center gap-4">
                   <div className="hidden sm:block">
                     {imgOk ? (
                       <img
@@ -128,7 +143,6 @@ export default function Hero() {
                     <h1 className="text-3xl sm:text-4xl font-bold leading-tight text-textmain text-center sm:text-left">
                       Zahraa Salim
                     </h1>
-
                     <p className="text-muted mt-1 flex items-center justify-center sm:justify-start gap-2">
                       <span className="inline-block min-w-[18ch]">
                         {typed}
@@ -136,10 +150,10 @@ export default function Hero() {
                       </span>
                     </p>
                   </div>
-                </div>
+                </motion.div>
 
                 {/* Location */}
-                <div className="flex justify-center sm:justify-end">
+                <motion.div {...fadeUp(0.25)} className="flex justify-center sm:justify-end">
                   <span className="inline-flex items-center gap-2 rounded-full border border-primary/25 bg-primary/10 px-4 py-2 text-sm text-textmain">
                     <svg
                       viewBox="0 0 24 24"
@@ -156,42 +170,48 @@ export default function Hero() {
                     </svg>
                     Lebanon
                   </span>
-                </div>
+                </motion.div>
               </div>
             </div>
 
             {/* Divider */}
-            <div className="mt-6 sm:mt-7 h-px w-full bg-primary/25" />
+            <motion.div
+              {...fadeUp(0.3)}
+              className="mt-6 sm:mt-7 h-px w-full bg-primary/25"
+            />
 
             {/* Content */}
             <div className="mt-7 grid gap-8 lg:grid-cols-2 lg:items-start">
               {/* Left */}
               <div className="space-y-5 sm:space-y-6">
-                <p className="text-lg text-textmain leading-relaxed">
-                  I build real products across mobile and web:{" "}
-                  <span className="font-semibold">Flutter</span> apps with{" "}
-                  <span className="font-semibold">Firebase</span>, and web interfaces with{" "}
-                  <span className="font-semibold">React</span>.
-                </p>
+                <motion.p {...fadeUp(0.35)} className="text-lg text-textmain leading-relaxed">
+                  I build digital products from the ground up — crafting{" "}
+                  <span className="font-semibold">mobile experiences</span>,{" "}
+                  <span className="font-semibold">web applications</span>, and the{" "}
+                  <span className="font-semibold">backend systems</span> that power them.
+                  Every project starts with purpose and ends with polish.
+                </motion.p>
 
-                <p className="text-textmain/90 italic leading-relaxed">
-                  “Clean architecture + calm UI = apps that scale and feel good to use.”
-                </p>
+                <motion.p {...fadeUp(0.4)} className="text-textmain/90 italic leading-relaxed">
+                  "I don't just write code — I build solutions that users love to use."
+                </motion.p>
 
                 {/* Specialty */}
-                <div className="w-full flex items-center gap-3 rounded-2xl border border-primary/25 bg-bg px-5 py-4">
+                <motion.div
+                  {...fadeUp(0.45)}
+                  className="w-full flex items-center gap-3 rounded-2xl border border-primary/25 bg-bg px-5 py-4"
+                >
                   <div>
                     <p className="text-sm text-muted">Specialty</p>
                     <p className="font-semibold text-textmain">
                       Flutter • React • Laravel APIs • Firebase
                     </p>
                   </div>
-                </div>
+                </motion.div>
 
                 {/* Actions */}
-                <div className="pt-2">
+                <motion.div {...fadeUp(0.5)} className="pt-2">
                   <div className="flex flex-wrap items-center justify-between sm:justify-start gap-2 w-full">
-                    {/* ✅ View CV button */}
                     <button
                       type="button"
                       onClick={openCv}
@@ -263,48 +283,50 @@ export default function Hero() {
                       </svg>
                     </a>
                   </div>
-                </div>
+                </motion.div>
               </div>
 
               {/* Right */}
               <div className="space-y-4">
                 {/* Desktop cards */}
                 <div className="hidden sm:grid gap-3">
-                  <div className="rounded-2xl bg-bg border border-primary/20 p-5 hover:bg-primary/10 transition">
-                    <p className="text-sm text-muted">Focus</p>
-                    <p className="font-semibold text-textmain">Full-Stack (Mobile + Web)</p>
-                  </div>
+                  {[
+                    { label: "Focus", value: "Turning ideas into real, production-ready products", delay: 0.35 },
+                    { label: "Stack", value: "Flutter • React • Next.js • Laravel • Firebase", delay: 0.45 },
+                    { label: "Approach", value: "User-first design • Clean architecture • Ship fast", delay: 0.55 },
+                  ].map((card) => (
+                    <motion.div
+                      key={card.label}
+                      {...fadeUp(card.delay)}
+                      whileHover={cardHover.whileHover}
+                      className="rounded-2xl bg-bg border border-primary/20 p-5 transition cursor-default"
+                    >
+                      <p className="text-sm text-muted">{card.label}</p>
+                      <p className="font-semibold text-textmain">{card.value}</p>
+                    </motion.div>
+                  ))}
 
-                  <div className="rounded-2xl bg-bg border border-primary/20 p-5 hover:bg-primary/10 transition">
-                    <p className="text-sm text-muted">Stack</p>
-                    <p className="font-semibold text-textmain">
-                      Flutter • React • Laravel • Firebase
-                    </p>
-                  </div>
-
-                  <div className="rounded-2xl bg-bg border border-primary/20 p-5 hover:bg-primary/10 transition">
-                    <p className="text-sm text-muted">Strengths</p>
-                    <p className="font-semibold text-textmain">
-                      Clean architecture • UX • Maintainable code
-                    </p>
-                  </div>
-
-                  <a
-                    href="#projects"
-                    className="rounded-2xl bg-primary/10 border border-primary/25 p-5 hover:bg-primary/15 transition"
+                  <motion.div
+                    {...fadeUp(0.65)}
+                    whileHover={cardHover.whileHover}
                   >
-                    <p className="text-sm text-muted">Featured</p>
-                    <p className="font-semibold text-textmain">
-                      Skill Exchange (Flutter + Firebase)
-                    </p>
-                    <p className="text-sm text-muted mt-1">
-                      Auth, profiles, posts, requests, real-time data
-                    </p>
-                  </a>
+                    <Link
+                      to="/projects"
+                      className="rounded-2xl bg-primary/10 border border-primary/25 p-5 transition block hover:bg-primary/15"
+                    >
+                      <p className="text-sm text-muted">Featured</p>
+                      <p className="font-semibold text-textmain">
+                        TalentLoop — Skill Exchange Platform
+                      </p>
+                      <p className="text-sm text-muted mt-1">
+                        Flutter + Firebase — real-time matching, profiles, and skill sharing
+                      </p>
+                    </Link>
+                  </motion.div>
                 </div>
 
                 {/* Mobile chips */}
-                <div className="sm:hidden">
+                <motion.div {...fadeUp(0.4)} className="sm:hidden">
                   <div className="grid grid-cols-2 gap-3">
                     <div className="rounded-2xl border border-primary/25 bg-primary/10 p-4">
                       <p className="text-xs text-muted">Focus</p>
@@ -324,23 +346,21 @@ export default function Hero() {
                     </div>
                   </div>
 
-                  <a
-                    href="#projects"
+                  <Link
+                    to="/projects"
                     className="mt-3 block rounded-2xl border border-primary/25 bg-bg p-4 hover:bg-primary/10 transition"
                   >
                     <p className="text-xs text-muted">Featured</p>
-                    <p className="font-semibold text-textmain">Skill Exchange App</p>
-                  </a>
-                </div>
+                    <p className="font-semibold text-textmain">TalentLoop Platform</p>
+                  </Link>
+                </motion.div>
               </div>
             </div>
-
-            {/* end */}
           </div>
         </div>
       </div>
 
-      {/* ✅ CV MODAL (white background) */}
+      {/* CV MODAL */}
       {cvOpen && (
         <div
           className="fixed inset-0 z-[10000] bg-black/40"
@@ -362,7 +382,6 @@ export default function Hero() {
             >
               <div className="h-1 bg-gradient-to-r from-primary/60 via-primary/20 to-transparent" />
 
-              {/* Header */}
               <div className="flex items-center justify-between gap-4 p-5 sm:p-6 border-b border-primary/15">
                 <div className="min-w-0">
                   <p className="text-xs text-muted">Document</p>
@@ -370,7 +389,6 @@ export default function Hero() {
                     Zahraa Salim — CV
                   </h3>
                 </div>
-
                 <div className="flex items-center gap-2">
                   <a
                     href={cvPdf}
@@ -390,7 +408,6 @@ export default function Hero() {
                 </div>
               </div>
 
-              {/* PDF viewer */}
               <div className="flex-1 min-h-0">
                 <iframe
                   title="CV"

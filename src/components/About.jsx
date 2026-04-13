@@ -1,31 +1,18 @@
-import { useEffect, useRef, useState } from "react";
+import { motion } from "framer-motion";
+
+const fadeUp = {
+  initial: { opacity: 0, y: 24 },
+  whileInView: { opacity: 1, y: 0 },
+  viewport: { once: true, margin: "-60px" },
+};
+
+const tr = (delay) => ({
+  duration: 0.6,
+  delay,
+  ease: [0.25, 0.46, 0.45, 0.94],
+});
 
 export default function About() {
-  // Reference to the section DOM element
-  const sectionRef = useRef(null);
-
-  // Controls whether the fade-in animation should run
-  const [inView, setInView] = useState(false);
-
-  // Detect when section enters viewport and trigger animation
-  useEffect(() => {
-    const el = sectionRef.current;
-    if (!el) return;
-
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          setInView(true);        // Start animation
-          observer.disconnect();  // Only animate once
-        }
-      },
-      { threshold: 0.18 } // Trigger when 18% visible
-    );
-
-    observer.observe(el);
-    return () => observer.disconnect();
-  }, []);
-
   return (
     <section id="about" className="bg-bg relative overflow-hidden">
       {/* Soft gradient background blobs */}
@@ -34,63 +21,79 @@ export default function About() {
         <div className="absolute -bottom-28 -right-28 h-96 w-96 rounded-full bg-primary/10 blur-3xl" />
       </div>
 
-      {/* Animated content container */}
-      <div
-        ref={sectionRef}
-        className={`relative max-w-6xl mx-auto px-4 sm:px-6 py-16 transition-all duration-700 ease-out
-          ${inView ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"}
-        `}
-      >
+      <div className="relative max-w-6xl mx-auto px-4 sm:px-6 py-16">
         {/* Header */}
-        <div className="text-center">
+        <motion.div
+          {...fadeUp}
+          transition={tr(0)}
+          className="text-center"
+        >
           <p className="text-sm text-muted">About</p>
           <h2 className="text-3xl sm:text-4xl font-bold text-textmain mt-2">
-            A bit about me
+            Who I am
           </h2>
           <div className="w-16 h-1 bg-primary rounded-full mt-4 mx-auto" />
-        </div>
+        </motion.div>
 
         {/* Text Content */}
         <div className="mt-10 max-w-4xl mx-auto text-center space-y-5 sm:space-y-7">
-          <p className="text-lg sm:text-2xl text-textmain leading-relaxed">
-            I’m Zahraa Salim, a Computer Science graduate and full-stack developer.
-            I build complete digital products across mobile and web using Flutter,
-            React, Laravel, and Firebase.
-          </p>
+          <motion.p
+            {...fadeUp}
+            transition={tr(0.12)}
+            className="text-lg sm:text-2xl text-textmain leading-relaxed"
+          >
+            Hi, I'm Zahraa — a Computer Science graduate passionate about
+            building products that solve real problems. I work across
+            mobile, web, and backend to deliver complete, polished applications.
+          </motion.p>
 
-          <p className="text-base sm:text-xl text-muted leading-relaxed">
-            My work spans from designing user-friendly interfaces to building
-            structured backends and APIs. I enjoy turning ideas into real, usable
-            applications with clean architecture and smooth user experiences.
-          </p>
+          <motion.p
+            {...fadeUp}
+            transition={tr(0.24)}
+            className="text-base sm:text-xl text-muted leading-relaxed"
+          >
+            From a Flutter app handling real-time data to a full-stack web
+            platform with authentication and dashboards — I take ownership of
+            the entire product lifecycle. I enjoy connecting the dots between
+            design, frontend, and the API layer.
+          </motion.p>
 
-          <p className="text-base sm:text-xl text-muted leading-relaxed">
-            I’m always learning, improving, and refining how I build software —
-            focusing on maintainable code, thoughtful UI decisions, and systems
-            that scale well over time.
-          </p>
+          <motion.p
+            {...fadeUp}
+            transition={tr(0.36)}
+            className="text-base sm:text-xl text-muted leading-relaxed"
+          >
+            What drives me is building things that work well and feel right.
+            I pick the right tools for the job, write code that's easy to
+            maintain, and obsess over the small details that make a big
+            difference in user experience.
+          </motion.p>
 
           {/* Focus Highlights */}
-          <div className="pt-2">
+          <motion.div
+            {...fadeUp}
+            transition={tr(0.48)}
+            className="pt-2"
+          >
             <p className="text-sm text-muted mb-4">What I focus on</p>
 
             <div className="flex flex-wrap justify-center gap-3">
               {[
-                "Clean architecture",
-                "Frontend + backend balance",
-                "Maintainable & scalable systems",
-                "UI/UX quality",
+                "Clean Architecture",
+                "End-to-End Development",
+                "Scalable Systems",
+                "Pixel-Perfect UI",
               ].map((title) => (
                 <div
                   key={title}
                   className="inline-flex items-center rounded-full border border-primary/25 bg-primary/10 px-4 py-2 text-sm font-medium text-textmain
-                            hover:bg-primary/15 transition duration-200 hover:-translate-y-0.5"
+                            hover:bg-primary/15 hover:scale-[1.05] transition-all duration-200"
                 >
                   {title}
                 </div>
               ))}
             </div>
-          </div>
+          </motion.div>
         </div>
       </div>
     </section>
