@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useLayoutEffect } from "react";
 import { Routes, Route, useLocation } from "react-router-dom";
 import Navbar from "./components/Navbar";
 import Hero from "./components/Hero";
@@ -16,7 +16,6 @@ function HomePage() {
   useEffect(() => {
     const hash = location.state?.scrollTo;
     if (hash) {
-      // Small delay to ensure the DOM is rendered after route transition
       const timer = setTimeout(() => {
         const el = document.querySelector(hash);
         if (el) el.scrollIntoView({ behavior: "smooth" });
@@ -36,13 +35,21 @@ function HomePage() {
   );
 }
 
-// Scroll to top when navigating to a new page (e.g., /projects)
+// Scroll to top on every route change.
+// Temporarily disables CSS scroll-behavior:smooth so it jumps instantly.
 function ScrollToTop() {
   const { pathname, state } = useLocation();
-  useEffect(() => {
-    // Skip if we're navigating to home with a scrollTo target (handled by HomePage)
+  useLayoutEffect(() => {
     if (state?.scrollTo) return;
-    window.scrollTo({ top: 0, left: 0, behavior: "instant" });
+    // Override CSS smooth scrolling to jump instantly
+    const html = document.documentElement;
+    const prev = html.style.scrollBehavior;
+    html.style.scrollBehavior = "auto";
+    window.scrollTo(0, 0);
+    // Restore after a tick so in-page smooth scrolling still works
+    requestAnimationFrame(() => {
+      html.style.scrollBehavior = prev;
+    });
   }, [pathname, state]);
   return null;
 }
