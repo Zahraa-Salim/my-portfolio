@@ -80,7 +80,14 @@ export default function ProjectsPage() {
   const goToPage = (p) => {
     const next = Math.min(Math.max(1, p), totalPages);
     setPage(next);
-    window.scrollTo({ top: 0, behavior: "smooth" });
+    // Bypass CSS scroll-behavior:smooth — jump instantly to top
+    const html = document.documentElement;
+    const prev = html.style.scrollBehavior;
+    html.style.scrollBehavior = "auto";
+    window.scrollTo(0, 0);
+    requestAnimationFrame(() => {
+      html.style.scrollBehavior = prev;
+    });
   };
 
   /* ── Modal ── */

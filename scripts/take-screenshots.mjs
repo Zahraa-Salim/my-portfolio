@@ -4,21 +4,22 @@
  * Usage:
  *   node scripts/take-screenshots.mjs
  *
- * Requires: npm install puppeteer (full version, not puppeteer-core)
- * This runs LOCALLY — not on Vercel.
- *
+ * Uses your locally installed Chrome — no extra download needed.
  * Output: public/screenshots/{repo-name}.webp
  *
  * Re-run whenever you add a new project or update a live site.
  */
 
-import puppeteer from "puppeteer";
+import puppeteer from "puppeteer-core";
 import { mkdirSync, existsSync } from "fs";
 import { resolve, dirname } from "path";
 import { fileURLToPath } from "url";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const OUT_DIR = resolve(__dirname, "../public/screenshots");
+
+// Path to your local Chrome
+const CHROME_PATH = "C:/Program Files/Google/Chrome/Application/chrome.exe";
 
 // Repos with live URLs (update this list when you add new projects)
 const SITES = [
@@ -35,15 +36,16 @@ const SITES = [
 async function main() {
   if (!existsSync(OUT_DIR)) mkdirSync(OUT_DIR, { recursive: true });
 
-  console.log("Launching browser...\n");
+  console.log("Launching Chrome...\n");
   const browser = await puppeteer.launch({
     headless: "new",
+    executablePath: CHROME_PATH,
     args: ["--no-sandbox", "--disable-setuid-sandbox"],
   });
 
   for (const site of SITES) {
     const outPath = resolve(OUT_DIR, `${site.name}.webp`);
-    console.log(`📸 ${site.name} → ${site.url}`);
+    console.log(`\u{1F4F8} ${site.name} \u2192 ${site.url}`);
 
     try {
       const page = await browser.newPage();
@@ -65,9 +67,9 @@ async function main() {
       });
 
       await page.close();
-      console.log(`   ✅ Saved → ${outPath}\n`);
+      console.log(`   \u2705 Saved \u2192 ${outPath}\n`);
     } catch (err) {
-      console.log(`   ❌ Failed: ${err.message}\n`);
+      console.log(`   \u274C Failed: ${err.message}\n`);
     }
   }
 

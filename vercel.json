@@ -1,12 +1,5 @@
 {
   "rewrites": [
-    { "source": "/api/(.*)", "destination": "/api/$1" },
-    { "source": "/((?!api/).*)", "destination": "/index.html" }
-  ],
-  "functions": {
-    "api/screenshot.js": {
-      "maxDuration": 30,
-      "memory": 1024
-    }
-  }
+    { "source": "/(.*)", "destination": "/index.html" }
+  ]
 }

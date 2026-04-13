@@ -1,109 +1,138 @@
 # Zahraa Salim – Developer Portfolio
 
-This is a modern, responsive developer portfolio built with React and Vite.
-It showcases my projects, technical skills, and professional profile, with live data fetched directly from GitHub.
+A modern, responsive developer portfolio built with **React**, **Vite**, and **Tailwind CSS**. It showcases projects, technical skills, and professional profile — with live data fetched from GitHub and pre-generated site screenshots.
 
-# Overview
+## Overview
 
-The portfolio dynamically loads my GitHub repositories and presents them in a clean, professional interface. Each project can be opened in a modal to view detailed information and the full README rendered from Markdown.
+The portfolio dynamically loads GitHub repositories and presents them in a clean, professional interface. It features a **home page** with a project preview and a dedicated **projects page** with filtering, pagination, and detail modals.
 
-This project focuses on strong UI structure, performance, and user experience.
+## Features
 
-# Features
-## Dynamic GitHub Projects
+### Dynamic GitHub Projects
+- Fetches repositories via the GitHub REST API
+- Pinned repos displayed first, then sorted by stars and update date
+- Portfolio repo is automatically hidden
+- Static tech filters (React, Vue, Flutter, Laravel, Next.js, FastAPI, Express)
+- Responsive card grid with animated transitions
 
-Fetches repositories using the GitHub REST API
+### Pre-Generated Site Screenshots
+- Card previews use static screenshots captured via Puppeteer
+- Screenshots stored in `public/screenshots/{repo-name}.webp`
+- Instant loading — no API calls or iframe rendering
+- Falls back to a styled tech placeholder if no screenshot exists
 
-Displays projects in responsive cards
+### Two-Page Layout
+- **Home page** (`/`) — Hero, About, Skills, 3 project cards + "Show more"
+- **Projects page** (`/projects`) — Full grid with filters, 9 per page, arrow pagination
+- Client-side routing with `react-router-dom`
+- Navbar links scroll to sections on home or navigate between pages
 
-Sorts by most recently updated
+### Project Detail Modal
+- Opens on card click with full project info
+- Technologies used (language + repository topics)
+- Direct links to GitHub repo and live demo
+- Live iframe preview of the deployed site
+- Full README rendered from Markdown (fetched via raw download URL)
+- Styled scrollbar, ESC key and outside-click to close
 
-Excludes forked repositories
+### Markdown Rendering
+- `react-markdown` with `remark-gfm` (GitHub Flavored Markdown)
+- Custom styling for headings, paragraphs, lists, code blocks, tables, images, blockquotes
 
-Supports pagination with Show More / Show Less
+### Hero Section
+- Animated typewriter role effect
+- Profile image with fallback initials
+- Quick links (Email, GitHub, LinkedIn)
+- "View CV" button with modal preview
+- Featured project card linking to projects page
 
-## Project Details Modal
+### Skills Section
+- Categorized skill lanes (Frontend, Mobile, Backend, Tools)
+- Staggered reveal animation on scroll
 
-Each project opens in an interactive modal that includes:
+### Navigation
+- Fixed navbar with scroll-aware visibility
+- Auto-hides when modals are open
+- Responsive mobile menu with slide-down panel
+- Smart hash navigation (scrolls on home, navigates from other pages)
 
-Technologies used (language and repository topics)
+### Responsive Design
+- Fully responsive across mobile, tablet, and desktop
+- Tailwind CSS utility-first approach
 
-Direct link to the GitHub repository
+## Tech Stack
 
-Live demo link (if provided)
+| Layer | Tools |
+|-------|-------|
+| Frontend | React 19, Vite |
+| Styling | Tailwind CSS 4 |
+| Routing | react-router-dom |
+| Animations | Framer Motion |
+| Data | GitHub REST API |
+| Markdown | react-markdown, remark-gfm |
+| Screenshots | Puppeteer (local script) |
+| Deployment | Vercel |
 
-Full README preview rendered from Markdown
+## Project Structure
 
-UTF-8 decoding to properly display emojis and symbols
+```
+src/
+├── App.jsx                  # Routes & scroll management
+├── main.jsx                 # Entry point with BrowserRouter
+├── style.css                # Global styles, scrollbar, cursor
+├── components/
+│   ├── Navbar.jsx           # Fixed nav with hash + route navigation
+│   ├── Hero.jsx             # Hero section with typewriter & CV modal
+│   ├── About.jsx            # About section
+│   ├── Skills.jsx           # Skills grid with reveal animation
+│   ├── ProjectsPreview.jsx  # Home page — 3 cards + "Show more"
+│   ├── ProjectsPage.jsx     # /projects — filters, 9/page, pagination, modal
+│   ├── projectsData.jsx     # Shared: GitHub fetch, cards, preview, helpers
+│   ├── Contact.jsx          # Contact section
+│   └── Footer.jsx           # Footer with dynamic year
+├── assets/
+│   └── Zahraa_Salim_CV.pdf
+public/
+├── screenshots/             # Pre-generated site preview images
+│   ├── AurumRealty.webp
+│   ├── flower-shop.webp
+│   └── ...
+scripts/
+└── take-screenshots.mjs     # Puppeteer screenshot generator
+```
 
-ESC key and outside click to close
+## Getting Started
 
-Background scroll lock for better user experience
+```bash
+# Install dependencies
+npm install
 
-## Markdown Rendering
+# Start dev server
+npm run dev
 
-README files are rendered using:
+# Build for production
+npm run build
+```
 
-react-markdown
+## Updating Screenshots
 
-remark-gfm (GitHub Flavored Markdown)
+When you add a new project with a live URL or update an existing site, regenerate the preview screenshots:
 
-Custom styling is applied for headings, paragraphs, lists, links, and code blocks.
+```bash
+node scripts/take-screenshots.mjs
+```
 
-## Hero Section
+This uses your locally installed Chrome to visit each site, wait for it to fully render, and save a 1280×800 WebP screenshot to `public/screenshots/`. Then commit the new images and redeploy.
 
-The hero section introduces my profile with:
+To add a new site, edit the `SITES` array in `scripts/take-screenshots.mjs`.
 
-Animated typewriter role effect
+## Environment Variables
 
-Responsive layout for mobile and desktop
+| Variable | Purpose | Required |
+|----------|---------|----------|
+| `VITE_GITHUB_TOKEN` | GitHub personal access token (avoids rate limits) | Optional |
 
-Profile image with fallback initials
-
-Quick contact links (Email, GitHub, LinkedIn)
-
-“View CV” button that opens a CV modal
-
-## Navigation Behavior
-
-The navigation bar includes advanced behavior:
-
-Appears only after scrolling past the hero section
-
-Automatically hides when a modal is open
-
-Responsive mobile menu
-
-Prevents background scroll when the mobile menu is open
-
-Closes on screen resize and ESC key
-
-## Responsive Design
-
-The portfolio is fully responsive and optimized for:
-
-Mobile devices, Tablets, Desktop screens
-
-Layout and spacing are handled using Tailwind CSS utility classes.
-
-# Tech Stack
-
-Frontend: React (Vite)
-Styling: Tailwind CSS
-Data Source: GitHub REST API
-Markdown Rendering: react-markdown, remark-gfm
-State Management: React Hooks
-
-# Technical Highlights
-
-Clean and modular component structure
-
-Reusable UI components
-
-API error handling and loading states
-
-Optimized modal performance
-
-Accessibility support (keyboard and focus handling)
-
-Smooth animations with minimal performance impact
+Create a `.env` file:
+```
+VITE_GITHUB_TOKEN=ghp_your_token_here
+```
