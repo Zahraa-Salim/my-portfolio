@@ -67,6 +67,22 @@ export default function ProjectsPage() {
     setPage(1);
   }, [activeTech]);
 
+  // Scroll to top whenever page changes (after React renders the new cards)
+  const isFirstRender = useRef(true);
+  useLayoutEffect(() => {
+    if (isFirstRender.current) {
+      isFirstRender.current = false;
+      return;
+    }
+    document.documentElement.style.scrollBehavior = "auto";
+    window.scrollTo(0, 0);
+    document.documentElement.scrollTop = 0;
+    document.body.scrollTop = 0;
+    requestAnimationFrame(() => {
+      document.documentElement.style.scrollBehavior = "";
+    });
+  }, [page]);
+
   const totalPages = useMemo(
     () => Math.max(1, Math.ceil(filtered.length / PER_PAGE)),
     [filtered.length]
@@ -80,14 +96,16 @@ export default function ProjectsPage() {
   const goToPage = (p) => {
     const next = Math.min(Math.max(1, p), totalPages);
     setPage(next);
-    // Bypass CSS scroll-behavior:smooth — jump instantly to top
-    const html = document.documentElement;
-    const prev = html.style.scrollBehavior;
-    html.style.scrollBehavior = "auto";
-    window.scrollTo(0, 0);
-    requestAnimationFrame(() => {
-      html.style.scrollBehavior = prev;
-    });
+    // Scroll to top AFTER React re-renders the new page
+    setTimeout(() => {
+      document.documentElement.style.scrollBehavior = "auto";
+      window.scrollTo(0, 0);
+      document.documentElement.scrollTop = 0;
+      document.body.scrollTop = 0;
+      requestAnimationFrame(() => {
+        document.documentElement.style.scrollBehavior = "";
+      });
+    }, 0);
   };
 
   /* ── Modal ── */
