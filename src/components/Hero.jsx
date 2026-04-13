@@ -311,7 +311,7 @@ export default function Hero() {
                     whileHover={cardHover.whileHover}
                   >
                     <Link
-                      to="/projects"
+                      to="/projects" onClick={() => window.scrollTo(0, 0)}
                       className="rounded-2xl bg-primary/10 border border-primary/25 p-5 transition block hover:bg-primary/15"
                     >
                       <p className="text-sm text-muted">Featured</p>
@@ -347,7 +347,7 @@ export default function Hero() {
                   </div>
 
                   <Link
-                    to="/projects"
+                    to="/projects" onClick={() => window.scrollTo(0, 0)}
                     className="mt-3 block rounded-2xl border border-primary/25 bg-bg p-4 hover:bg-primary/10 transition"
                   >
                     <p className="text-xs text-muted">Featured</p>

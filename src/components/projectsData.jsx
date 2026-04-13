@@ -195,15 +195,11 @@ export function TechPlaceholder({ language, topics = [] }) {
   );
 }
 
-/* ────────────── Card preview via server-side screenshot API ────────────── */
+/* ────────────── Card preview via pre-generated static screenshots ────────────── */
 
-// In production (Vercel), this hits /api/screenshot.
-// In dev, the screenshot API isn't available, so we fall back to TechPlaceholder.
-function getScreenshotUrl(siteUrl) {
-  return `/api/screenshot?url=${encodeURIComponent(siteUrl)}`;
-}
-
-export function CardPreview({ homepage, language, topics }) {
+// Screenshots are stored in /public/screenshots/{repo-name}.webp
+// Generated locally via: node scripts/take-screenshots.mjs
+export function CardPreview({ homepage, repoName, language, topics }) {
   const [status, setStatus] = useState("loading"); // "loading" | "ready" | "failed"
   const url = homepage?.trim();
 
@@ -211,7 +207,7 @@ export function CardPreview({ homepage, language, topics }) {
     return <TechPlaceholder language={language} topics={topics} />;
   }
 
-  const screenshotSrc = getScreenshotUrl(url);
+  const screenshotSrc = `/screenshots/${repoName}.webp`;
 
   return (
     <div className="relative h-full w-full overflow-hidden">
@@ -224,11 +220,11 @@ export function CardPreview({ homepage, language, topics }) {
         <TechPlaceholder language={language} topics={topics} />
       </div>
 
-      {/* Screenshot image */}
+      {/* Static screenshot image */}
       {status !== "failed" && (
         <img
           src={screenshotSrc}
-          alt="Site preview"
+          alt={`${repoName} preview`}
           loading="lazy"
           className={`absolute inset-0 w-full h-full object-cover object-top z-0 transition-opacity duration-500 ${
             status === "ready" ? "opacity-100" : "opacity-0"
@@ -351,7 +347,7 @@ export function ProjectCard({ repo, index, onOpen }) {
     <>
       {/* Preview area */}
       <div className="h-[180px] overflow-hidden rounded-t-2xl border-b border-primary/10">
-        <CardPreview homepage={homepage} language={language} topics={repo.topics} />
+        <CardPreview homepage={homepage} repoName={repo.name} language={language} topics={repo.topics} />
       </div>
 
       {/* Card body */}

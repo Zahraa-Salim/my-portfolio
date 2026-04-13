@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { motion, AnimatePresence, LayoutGroup } from "framer-motion";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
@@ -29,7 +29,20 @@ export default function ProjectsPage() {
   const [readmeLoading, setReadmeLoading] = useState(false);
   const [readmeError, setReadmeError] = useState("");
 
-  // (Scroll-to-top handled globally by ScrollToTop in App.jsx)
+  // Force scroll to top on mount — bypass CSS smooth scrolling
+  const mounted = useRef(false);
+  useLayoutEffect(() => {
+    if (!mounted.current) {
+      mounted.current = true;
+      document.documentElement.style.scrollBehavior = "auto";
+      window.scrollTo(0, 0);
+      document.documentElement.scrollTop = 0;
+      document.body.scrollTop = 0; // Safari fallback
+      requestAnimationFrame(() => {
+        document.documentElement.style.scrollBehavior = "";
+      });
+    }
+  }, []);
 
   /* ── Static filter labels — matching searches all topics + language ── */
   const FILTERS = ["All", "React", "Vue", "Flutter", "Laravel", "Next.js", "FastAPI", "Express"];

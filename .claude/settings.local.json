@@ -3,7 +3,13 @@
     "allow": [
       "Bash(npm run:*)",
       "Bash(npm install:*)",
-      "Bash(node -e \"require\\(''puppeteer-core''\\); require\\(''@sparticuz/chromium''\\); console.log\\(''Both packages installed OK''\\)\")"
+      "Bash(node -e \"require\\(''puppeteer-core''\\); require\\(''@sparticuz/chromium''\\); console.log\\(''Both packages installed OK''\\)\")",
+      "Bash(curl -s \"https://api.github.com/users/Zahraa-Salim/repos?per_page=100\")",
+      "Bash(node -e \"require\\(''puppeteer''\\); console.log\\(''puppeteer ready''\\)\")",
+      "Bash(node scripts/take-screenshots.mjs)",
+      "Bash(npx puppeteer:*)",
+      "Read(//c/Program Files/Google/Chrome/Application/**)",
+      "Read(//c/Program Files \\(x86\\)/Google/Chrome/Application/**)"
     ]
   }
 }

@@ -138,6 +138,7 @@ export default function ProjectsPreview() {
           >
             <Link
               to="/projects"
+              onClick={() => window.scrollTo(0, 0)}
               className="rounded-xl border border-primary/20 bg-bg/70 backdrop-blur-sm px-6 py-3 text-sm font-medium text-textmain hover:bg-primary/10 transition active:scale-[0.98] inline-flex items-center gap-2"
             >
               Show more projects

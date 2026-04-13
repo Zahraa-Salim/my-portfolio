@@ -98,7 +98,7 @@ export default function Navbar() {
               </a>
             </li>
             <li>
-              <Link to="/projects" className={`${linkBase} ${linkHover} ${linkUnderline}`}>
+              <Link to="/projects" onClick={() => window.scrollTo(0, 0)} className={`${linkBase} ${linkHover} ${linkUnderline}`}>
                 Projects
               </Link>
             </li>
@@ -144,7 +144,7 @@ export default function Navbar() {
                   <Link
                     key={item.label}
                     to={item.to}
-                    onClick={() => setOpen(false)}
+                    onClick={() => { setOpen(false); window.scrollTo(0, 0); }}
                     className="block px-4 py-3 rounded-xl text-textmain hover:bg-primary/15 transition"
                   >
                     {item.label}
