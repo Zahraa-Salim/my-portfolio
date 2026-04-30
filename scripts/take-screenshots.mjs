@@ -1,5 +1,5 @@
 /**
- * Pre-generate FULL-PAGE screenshots of all live project sites.
+ * Pre-generate screenshots of all live project sites.
  *
  * Usage:
  *   node scripts/take-screenshots.mjs
@@ -45,7 +45,7 @@ async function main() {
 
   for (const site of SITES) {
     const outPath = resolve(OUT_DIR, `${site.name}.webp`);
-    console.log(`\u{1F4F8} ${site.name} \u2192 ${site.url}`);
+    console.log(`📸 ${site.name} → ${site.url}`);
 
     try {
       const page = await browser.newPage();
@@ -59,27 +59,16 @@ async function main() {
       // Wait extra for JS hydration & animations
       await new Promise((r) => setTimeout(r, 3000));
 
-      // Get the full scrollable height of the page (capped at 4000px)
-      const fullHeight = await page.evaluate(() =>
-        Math.min(document.body.scrollHeight, 4000)
-      );
-
-      // Resize viewport to capture full page
-      await page.setViewport({ width: 1280, height: fullHeight });
-      // Small wait for any layout shifts after resize
-      await new Promise((r) => setTimeout(r, 500));
-
       await page.screenshot({
         path: outPath,
         type: "webp",
         quality: 82,
-        clip: { x: 0, y: 0, width: 1280, height: fullHeight },
       });
 
       await page.close();
-      console.log(`   \u2705 Saved (${fullHeight}px tall) \u2192 ${outPath}\n`);
+      console.log(`   ✅ Saved → ${outPath}\n`);
     } catch (err) {
-      console.log(`   \u274C Failed: ${err.message}\n`);
+      console.log(`   ❌ Failed: ${err.message}\n`);
     }
   }
 
