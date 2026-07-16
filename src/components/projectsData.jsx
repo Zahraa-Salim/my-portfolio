@@ -315,7 +315,7 @@ export function CardPreview({ homepage, repoName, language, topics }) {
           loading="lazy"
           className={`absolute inset-0 w-full h-full object-cover object-[50%_0%] z-0
             transition-opacity duration-500
-            group-hover:object-[50%_100%] group-hover:transition-[object-position] group-hover:duration-[4000ms] group-hover:ease-linear ${
+            group-hover:object-[50%_100%] group-hover:transition-[object-position] group-hover:duration-[8000ms] group-hover:ease-linear ${
             status === "ready" ? "opacity-100" : "opacity-0"
           }`}
           onLoad={() => setStatus("ready")}
@@ -347,7 +347,8 @@ export function ModalScreenshot({ homepage, repoName, language, topics }) {
       src={src}
       alt={`${repoName} preview`}
       loading="lazy"
-      className="w-full h-full object-cover object-top"
+      className="w-full h-full object-cover object-[50%_0%]
+        group-hover/shot:object-[50%_100%] group-hover/shot:transition-[object-position] group-hover/shot:duration-[8000ms] group-hover/shot:ease-linear"
       onError={() => setFailed(true)}
     />
   );

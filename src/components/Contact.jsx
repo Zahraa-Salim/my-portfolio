@@ -15,9 +15,9 @@ const tr = (delay) => ({
 
 const EMAIL = "zahraa.salim01@gmail.com";
 
-// Optional: paste your Formspree form ID (e.g. "xxxxabcd") to enable
-// real submissions. While empty, the form falls back to a mailto: draft.
-const FORMSPREE_ID = "";
+// Formspree form ID — submissions POST to https://formspree.io/f/<id> and
+// are emailed to zahraa.salim01@gmail.com. If cleared, falls back to mailto:.
+const FORMSPREE_ID = "xqeregna";
 
 export default function Contact() {
   const [form, setForm] = useState({ name: "", email: "", message: "" });
