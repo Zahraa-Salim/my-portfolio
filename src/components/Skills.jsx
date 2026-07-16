@@ -1,41 +1,33 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 
 function Chip({ children }) {
-  // Small pill UI for each skill
+  // Plain text tag with an underline reveal on hover — no box
   return (
-    <span className="inline-flex items-center rounded-full border border-primary/25 bg-primary/10 px-4 py-2 text-sm font-medium text-textmain
-      hover:bg-primary/15 hover:scale-[1.03] hover:shadow-sm transition-all duration-200 cursor-default">
+    <span className="text-sm font-semibold brut-label text-textmain border-b-2 border-transparent hover:border-primary transition-colors duration-150 cursor-default pb-0.5">
       {children}
     </span>
   );
 }
 
-function SkillLane({ title, subtitle, items, show, delayMs = 0 }) {
-  // One skill category block (Frontend, Mobile, etc.)
+function SkillLane({ title, subtitle, items, accent, show, delayMs = 0 }) {
+  // One skill category — left accent bar instead of a full box
+  const bar = accent ? "border-accent" : "border-primary";
   return (
     <div
       className={[
-        "relative transition-all duration-700 ease-out",
+        `border-l-[3px] ${bar} pl-6`,
+        "transition-all duration-500 ease-out",
         show ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4",
       ].join(" ")}
       style={{ transitionDelay: `${delayMs}ms` }}
     >
-      <div className="absolute left-0 top-1.5 bottom-1.5 w-[3px] rounded-full bg-primary/35" />
+      <h3 className="text-xl font-extrabold uppercase tracking-tight text-textmain">{title}</h3>
+      <p className="brut-label text-[11px] text-muted mt-1">{subtitle}</p>
 
-      <div className="pl-6">
-        <div className="flex items-end justify-between gap-3">
-          <div>
-            <h3 className="text-lg sm:text-xl font-semibold text-textmain">{title}</h3>
-            <p className="text-sm text-muted mt-1">{subtitle}</p>
-          </div>
-          <div className="hidden sm:block h-[2px] w-16 bg-primary/40 rounded-full" />
-        </div>
-
-        <div className="mt-4 flex flex-wrap gap-2">
-          {items.map((s) => (
-            <Chip key={s}>{s}</Chip>
-          ))}
-        </div>
+      <div className="mt-4 flex flex-wrap gap-x-5 gap-y-2.5">
+        {items.map((s) => (
+          <Chip key={s}>{s}</Chip>
+        ))}
       </div>
     </div>
   );
@@ -56,22 +48,22 @@ export default function Skills() {
       {
         title: "Frontend",
         subtitle: "UI, components, styling, and interactions",
-        items: ["React", "Vue.js", "Next.js", "JavaScript", "Tailwind CSS", "HTML5", "CSS3", "Responsive UI", "REST API Integration"],
+        items: ["React", "Next.js (App Router)", "Vue", "TypeScript", "JavaScript", "Tailwind CSS", "Responsive UI", "TanStack", "Zustand"],
       },
       {
         title: "Mobile",
         subtitle: "Cross-platform apps with clean architecture",
-        items: ["Flutter", "Dart", "Firebase Auth", "Cloud Firestore", "State Management", "Clean Architecture", "App Deployment"],
+        items: ["Flutter", "Dart", "Firebase", "State Management", "Reusable Widgets", "REST APIs"],
       },
       {
-        title: "Backend",
+        title: "Backend & Databases",
         subtitle: "APIs, data, and server-side structure",
-        items: ["Laravel", "PHP", "Express.js", "REST APIs", "MySQL / SQL", "PostgreSQL", "Supabase", "Authentication", "CRUD Systems", "MVC Pattern"],
+        items: ["Node.js", "Express.js", "NestJS", "Laravel", "Inertia.js", "Django", "FastAPI", "Prisma ORM", "NextAuth.js", "PostgreSQL", "MySQL", "MongoDB", "Supabase", "Redis"],
       },
       {
-        title: "Tools",
-        subtitle: "Workflow, collaboration, and delivery",
-        items: ["Git", "GitHub", "Postman", "Figma", "Vercel", "VS Code", "Debugging"],
+        title: "Tools & Integrations",
+        subtitle: "Workflow, delivery, and AI",
+        items: ["Git & GitHub", "Jira", "Trello", "Agile / Scrum", "Vercel", "Render", "Railway", "Postman", "Claude API", "GitHub API"],
       },
     ],
     []
@@ -123,12 +115,7 @@ export default function Skills() {
   }, [inView, lanes.length]);
 
   return (
-    <section id="skills" className="bg-bg relative overflow-hidden">
-      <div className="pointer-events-none absolute inset-0">
-        <div className="absolute -top-28 -right-28 h-96 w-96 rounded-full bg-primary/12 blur-3xl" />
-        <div className="absolute -bottom-24 -left-24 h-80 w-80 rounded-full bg-primary/10 blur-3xl" />
-      </div>
-
+    <section id="skills" className="relative overflow-hidden">
       <div
         ref={sectionRef}
         className={[
@@ -138,35 +125,32 @@ export default function Skills() {
         ].join(" ")}
       >
         {/* Header */}
-        <div className="text-center">
-          <p className="text-sm text-muted">Skills</p>
-          <h2 className="text-3xl sm:text-4xl font-bold text-textmain mt-2">
-            Tools I build with
-          </h2>
-          <p className="text-muted mt-3 max-w-2xl mx-auto leading-relaxed">
-            I focus on shipping real products with clean structure, strong UI, and practical tooling across mobile, web, and backend.
-          </p>
-          <div className="w-16 h-1 bg-primary rounded-full mt-4 mx-auto" />
+        <div className="flex items-end gap-4">
+          <span className="brut-label text-sm font-bold text-primary">02</span>
+          <div className="flex-1 h-[3px] bg-ink" />
+          <span className="brut-label text-sm font-bold text-muted">Skills</span>
         </div>
 
-        <div className="mt-10 h-px w-full bg-primary/25" />
+        <h2 className="mt-6 text-4xl sm:text-6xl font-extrabold text-textmain uppercase tracking-tight leading-[0.95]">
+          Tools I <span className="text-accent">build with</span>
+        </h2>
+        <p className="text-muted mt-4 max-w-2xl leading-relaxed">
+          I focus on shipping real products with clean structure, strong UI, and practical tooling across mobile, web, and backend.
+        </p>
 
         {/* Skill lanes */}
-        <div className="mt-10 grid gap-10 lg:grid-cols-2">
+        <div className="mt-10 grid gap-6 lg:grid-cols-2">
           {lanes.map((lane, idx) => (
             <SkillLane
               key={lane.title}
               title={lane.title}
               subtitle={lane.subtitle}
               items={lane.items}
+              accent={idx % 2 === 1}
               show={revealedCount >= idx + 1}
               delayMs={idx * 40}
             />
           ))}
-        </div>
-
-        <div className="mt-12 flex justify-center">
-          <div className="h-[2px] w-40 bg-primary/30 rounded-full" />
         </div>
       </div>
     </section>

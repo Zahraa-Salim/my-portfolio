@@ -96,47 +96,148 @@ export function techRowFrom(metaTags = [], language, topics = []) {
   });
 }
 
-/* ── Custom hook: fetch & clean repos ── */
+// Normalize a tech label for matching ("Next.js" → "next", "FastAPI" → "fastapi")
+export const normTech = (s) =>
+  String(s || "").toLowerCase().replace(/\.js$/, "").replace(/[.\-\s]/g, "");
+
+// Does a repo match a filter tech? Checks language, topics, and name.
+export function matchesTech(repo, tech) {
+  if (!tech || tech === "All") return true;
+  const key = normTech(tech);
+  if (repo.language && normTech(repo.language) === key) return true;
+  if ((repo.topics || []).some((t) => normTech(t).includes(key))) return true;
+  if ((repo.name || "").toLowerCase().includes(key)) return true;
+  return false;
+}
+
+// GitHub-style language colors for the little dot next to a repo's language.
+export const LANG_COLORS = {
+  javascript: "#f1e05a",
+  typescript: "#3178c6",
+  dart: "#00b4ab",
+  php: "#4f5d95",
+  vue: "#41b883",
+  html: "#e34c26",
+  css: "#563d7c",
+  scss: "#c6538c",
+  python: "#3572a5",
+  java: "#b07219",
+  "c++": "#f34b7d",
+  "c#": "#178600",
+  ruby: "#701516",
+  go: "#00add8",
+  rust: "#dea584",
+  shell: "#89e051",
+  kotlin: "#a97bff",
+  swift: "#f05138",
+};
+export const langColor = (language) =>
+  LANG_COLORS[String(language || "").toLowerCase()] || "rgb(var(--accent))";
+
+/* ── Shared repo cache ──
+   The repo list is fetched once and shared across every consumer
+   (home teaser + /projects). Avoids duplicate requests and helps stay
+   under GitHub's 60-req/hour unauthenticated limit.
+   - reposMemoryCache: instant, lives for the tab's lifetime
+   - reposPromise: dedupes concurrent in-flight fetches
+   - sessionStorage: survives reloads within a short TTL              */
+const REPOS_CACHE_KEY = "gh-repos-cache";
+const REPOS_TTL = 10 * 60 * 1000; // 10 minutes
+let reposMemoryCache = null;
+let reposPromise = null;
+
+function readSessionCache() {
+  try {
+    const raw = sessionStorage.getItem(REPOS_CACHE_KEY);
+    if (!raw) return null;
+    const { ts, repos } = JSON.parse(raw);
+    if (!ts || Date.now() - ts > REPOS_TTL) return null;
+    return Array.isArray(repos) ? repos : null;
+  } catch {
+    return null;
+  }
+}
+
+function writeSessionCache(repos) {
+  try {
+    sessionStorage.setItem(REPOS_CACHE_KEY, JSON.stringify({ ts: Date.now(), repos }));
+  } catch {
+    /* storage unavailable / quota — ignore */
+  }
+}
+
+function cleanRepos(data) {
+  const all = data
+    .filter((r) => !r.fork)
+    .filter((r) => !HIDDEN_REPOS.includes(r.name));
+
+  // Pinned repos first (in defined order), then the rest by stars/date
+  const byName = new Map(all.map((r) => [r.name, r]));
+  const pinned = PINNED_REPOS.map((n) => byName.get(n)).filter(Boolean);
+  const pinnedSet = new Set(PINNED_REPOS);
+  const rest = all
+    .filter((r) => !pinnedSet.has(r.name))
+    .sort((a, b) => {
+      const starDiff = (b.stargazers_count || 0) - (a.stargazers_count || 0);
+      if (starDiff !== 0) return starDiff;
+      return new Date(b.updated_at) - new Date(a.updated_at);
+    });
+  return [...pinned, ...rest];
+}
+
+function loadRepos() {
+  if (reposMemoryCache) return Promise.resolve(reposMemoryCache);
+  const cached = readSessionCache();
+  if (cached) {
+    reposMemoryCache = cached;
+    return Promise.resolve(cached);
+  }
+  if (!reposPromise) {
+    reposPromise = (async () => {
+      const data = await fetchAllRepos(USERNAME);
+      const cleaned = cleanRepos(data);
+      reposMemoryCache = cleaned;
+      writeSessionCache(cleaned);
+      return cleaned;
+    })().catch((e) => {
+      reposPromise = null; // allow a retry after failure
+      throw e;
+    });
+  }
+  return reposPromise;
+}
+
+/* ── Custom hook: fetch & clean repos (cached/shared) ── */
 export function useGitHubRepos() {
-  const [repos, setRepos] = useState([]);
-  const [status, setStatus] = useState("idle");
+  const [repos, setRepos] = useState(() => reposMemoryCache || []);
+  const [status, setStatus] = useState(() => (reposMemoryCache ? "success" : "idle"));
   const [error, setError] = useState("");
 
   useEffect(() => {
+    if (reposMemoryCache) {
+      setRepos(reposMemoryCache);
+      setStatus("success");
+      return;
+    }
     let cancelled = false;
-    (async () => {
-      try {
-        setStatus("loading");
-        setError("");
-        const data = await fetchAllRepos(USERNAME);
-        const all = data
-          .filter((r) => !r.fork)
-          .filter((r) => !HIDDEN_REPOS.includes(r.name));
-
-        // Pinned repos first (in defined order), then the rest by stars/date
-        const byName = new Map(all.map((r) => [r.name, r]));
-        const pinned = PINNED_REPOS.map((n) => byName.get(n)).filter(Boolean);
-        const pinnedSet = new Set(PINNED_REPOS);
-        const rest = all
-          .filter((r) => !pinnedSet.has(r.name))
-          .sort((a, b) => {
-            const starDiff = (b.stargazers_count || 0) - (a.stargazers_count || 0);
-            if (starDiff !== 0) return starDiff;
-            return new Date(b.updated_at) - new Date(a.updated_at);
-          });
-        const cleaned = [...pinned, ...rest];
+    setStatus("loading");
+    setError("");
+    loadRepos()
+      .then((r) => {
         if (!cancelled) {
-          setRepos(cleaned);
+          setRepos(r);
           setStatus("success");
         }
-      } catch (e) {
+      })
+      .catch((e) => {
         if (!cancelled) {
           setStatus("error");
           setError(e?.message || "Failed to load projects.");
         }
-      }
-    })();
-    return () => { cancelled = true; };
+      });
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
   return { repos, status, error };
@@ -146,11 +247,8 @@ export function useGitHubRepos() {
 
 export function IconBadge({ label }) {
   return (
-    <span className="inline-flex items-center gap-2 rounded-full border border-primary/20 bg-bg/70 px-3 py-1.5 text-xs text-textmain">
-      <span className="inline-flex h-5 w-5 items-center justify-center rounded-full bg-primary/10 border border-primary/20 text-[10px] font-semibold text-textmain">
-        {label?.[0]?.toUpperCase() || "•"}
-      </span>
-      <span className="whitespace-nowrap">{label}</span>
+    <span className="inline-flex items-center text-[11px] font-semibold brut-label text-textmain border-l-2 border-primary pl-2">
+      {label}
     </span>
   );
 }
@@ -160,32 +258,20 @@ export function IconBadge({ label }) {
 export function TechPlaceholder({ language, topics = [] }) {
   const techs = [language, ...topics].filter(Boolean).slice(0, 3);
   return (
-    <div className="relative h-full w-full bg-gradient-to-br from-primary/20 via-surface/60 to-primary/10 flex flex-col items-center justify-center gap-3 overflow-hidden">
+    <div className="relative h-full w-full bg-accent flex flex-col items-center justify-center gap-3 overflow-hidden">
       <div
-        className="absolute inset-0 opacity-[0.07]"
+        className="absolute inset-0 opacity-[0.15]"
         style={{
           backgroundImage:
-            "radial-gradient(circle, rgb(var(--textmain)) 1px, transparent 1px)",
-          backgroundSize: "18px 18px",
+            "repeating-linear-gradient(45deg, rgb(var(--ink)) 0, rgb(var(--ink)) 2px, transparent 2px, transparent 12px)",
         }}
       />
-      <svg
-        className="relative w-8 h-8 text-primary/50"
-        fill="none"
-        viewBox="0 0 24 24"
-        stroke="currentColor"
-        strokeWidth="1.5"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      >
-        <polyline points="16 18 22 12 16 6" />
-        <polyline points="8 6 2 12 8 18" />
-      </svg>
-      <div className="relative flex flex-wrap justify-center gap-2 px-4">
+      <span className="relative brut-label text-white/90 text-xs font-bold tracking-widest">&lt;/&gt;</span>
+      <div className="relative flex flex-wrap justify-center gap-x-4 gap-y-1 px-4">
         {techs.map((t) => (
           <span
             key={t}
-            className="rounded-full border border-primary/25 bg-bg/60 px-3 py-1 text-xs font-medium text-textmain/80"
+            className="text-xs font-semibold brut-label text-white"
           >
             {t}
           </span>
@@ -220,13 +306,16 @@ export function CardPreview({ homepage, repoName, language, topics }) {
         <TechPlaceholder language={language} topics={topics} />
       </div>
 
-      {/* Static screenshot image */}
+      {/* Screenshot image — pans top→bottom on hover, like scrolling the live site.
+          On hover-out it snaps back to the top (transition only applies on hover). */}
       {status !== "failed" && (
         <img
           src={screenshotSrc}
           alt={`${repoName} preview`}
           loading="lazy"
-          className={`absolute inset-0 w-full h-full object-cover object-top z-0 transition-opacity duration-500 ${
+          className={`absolute inset-0 w-full h-full object-cover object-[50%_0%] z-0
+            transition-opacity duration-500
+            group-hover:object-[50%_100%] group-hover:transition-[object-position] group-hover:duration-[4000ms] group-hover:ease-linear ${
             status === "ready" ? "opacity-100" : "opacity-0"
           }`}
           onLoad={() => setStatus("ready")}
@@ -234,32 +323,74 @@ export function CardPreview({ homepage, repoName, language, topics }) {
         />
       )}
 
-      {/* Subtle gradient at bottom */}
+      {/* "Live" hover hint */}
       {status === "ready" && (
-        <div className="absolute bottom-0 left-0 right-0 h-8 bg-gradient-to-t from-bg/60 to-transparent pointer-events-none z-20" />
+        <span className="pointer-events-none absolute top-2 right-2 z-20 brut-label text-[9px] font-bold text-white bg-primary px-2 py-0.5 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+          ● live
+        </span>
       )}
     </div>
   );
+}
+
+/* ────────── Larger screenshot preview for the detail modal ────────── */
+
+export function ModalScreenshot({ homepage, repoName, language, topics }) {
+  const [failed, setFailed] = useState(false);
+  const url = homepage?.trim();
+  const src = `/screenshots/${repoName}.webp`;
+
+  const inner = failed ? (
+    <TechPlaceholder language={language} topics={topics} />
+  ) : (
+    <img
+      src={src}
+      alt={`${repoName} preview`}
+      loading="lazy"
+      className="w-full h-full object-cover object-top"
+      onError={() => setFailed(true)}
+    />
+  );
+
+  if (url) {
+    return (
+      <a
+        href={url}
+        target="_blank"
+        rel="noreferrer"
+        title="Open live site"
+        className="group/shot relative block h-full w-full"
+      >
+        {inner}
+        <span className="absolute inset-0 flex items-center justify-center bg-ink/0 group-hover/shot:bg-ink/30 transition-colors">
+          <span className="opacity-0 group-hover/shot:opacity-100 transition-opacity bg-primary text-white brut-label text-xs font-bold px-4 py-2">
+            Open live site →
+          </span>
+        </span>
+      </a>
+    );
+  }
+  return inner;
 }
 
 /* ───────────────────── Loading skeleton card ───────────────────── */
 
 export function SkeletonCard() {
   return (
-    <div className="rounded-2xl border border-primary/15 bg-bg/60 overflow-hidden animate-pulse">
-      <div className="h-[180px] bg-primary/8" />
+    <div className="border border-ink/10 bg-surface overflow-hidden animate-pulse">
+      <div className="h-[180px] bg-ink/10 border-b border-ink/10" />
       <div className="p-5 space-y-3">
         <div className="flex justify-between">
-          <div className="h-5 w-2/3 rounded bg-primary/10" />
-          <div className="h-4 w-16 rounded bg-primary/10" />
+          <div className="h-5 w-2/3 bg-ink/10" />
+          <div className="h-4 w-16 bg-ink/10" />
         </div>
         <div className="space-y-2">
-          <div className="h-3 w-full rounded bg-primary/10" />
-          <div className="h-3 w-5/6 rounded bg-primary/10" />
+          <div className="h-3 w-full bg-ink/10" />
+          <div className="h-3 w-5/6 bg-ink/10" />
         </div>
         <div className="flex justify-between pt-2">
-          <div className="h-7 w-20 rounded-full bg-primary/10" />
-          <div className="h-8 w-16 rounded-xl bg-primary/10" />
+          <div className="h-7 w-20 bg-ink/10" />
+          <div className="h-8 w-16 bg-ink/10" />
         </div>
       </div>
     </div>
@@ -312,10 +443,10 @@ export function ModalIframePreview({ url }) {
   return (
     <div className="relative w-full h-full overflow-hidden styled-scrollbar">
       {!loaded && (
-        <div className="absolute inset-0 flex items-center justify-center bg-surface/30">
+        <div className="absolute inset-0 flex items-center justify-center bg-bg">
           <div className="flex flex-col items-center gap-2">
-            <div className="w-6 h-6 border-2 border-primary/30 border-t-primary rounded-full animate-spin" />
-            <span className="text-xs text-muted">Loading preview…</span>
+            <div className="w-6 h-6 border-[3px] border-ink border-t-primary rounded-full animate-spin" />
+            <span className="brut-label text-xs text-muted">Loading preview…</span>
           </div>
         </div>
       )}
@@ -341,32 +472,36 @@ export function ProjectCard({ repo, index, onOpen }) {
   const updated = formatDate(repo.updated_at);
   const homepage = repo.homepage?.trim();
   const language = repo.language || "Code";
+  const stars = repo.stargazers_count || 0;
   const techTags = techRowFrom([], null, (repo.topics || []).slice(0, 4));
 
   return (
     <>
       {/* Preview area */}
-      <div className="h-[180px] overflow-hidden rounded-t-2xl border-b border-primary/10">
+      <div className="h-[180px] overflow-hidden border-b border-ink/10">
         <CardPreview homepage={homepage} repoName={repo.name} language={language} topics={repo.topics} />
       </div>
 
       {/* Card body */}
       <div className="p-5 flex flex-col flex-1">
         <div className="flex items-start justify-between gap-3">
-          <h3 className="text-lg font-semibold text-textmain leading-snug line-clamp-1">
+          <h3 className="text-lg font-extrabold text-textmain leading-snug line-clamp-1 uppercase group-hover:text-primary transition-colors">
             {title}
           </h3>
-          <span className="text-xs text-muted whitespace-nowrap">{updated}</span>
+          <span className="brut-label text-[10px] text-muted whitespace-nowrap flex items-center gap-2">
+            {stars > 0 && <span className="text-accent">★ {stars}</span>}
+            {updated}
+          </span>
         </div>
 
         <p className="text-sm text-muted mt-2 leading-relaxed line-clamp-2 mb-3">{desc}</p>
 
         {techTags.length > 0 && (
-          <div className="flex flex-wrap gap-1.5 mb-3">
+          <div className="flex flex-wrap gap-x-4 gap-y-1.5 mb-3">
             {techTags.map((t) => (
               <span
                 key={t}
-                className="rounded-full border border-primary/20 bg-bg/80 px-2.5 py-1 text-[11px] text-textmain"
+                className="text-[11px] font-semibold brut-label text-textmain border-b border-ink/15"
               >
                 {t}
               </span>
@@ -374,24 +509,24 @@ export function ProjectCard({ repo, index, onOpen }) {
           </div>
         )}
 
-        <div className="mt-auto flex items-center justify-between gap-3 pt-2">
-          <span className="rounded-full border border-primary/20 bg-primary/10 px-3 py-1.5 text-xs text-textmain">
+        {/* Click affordance — the whole card opens the detail modal */}
+        <span className="mb-3 block text-[10px] brut-label font-bold text-primary opacity-0 group-hover:opacity-100 transition-opacity">
+          View details →
+        </span>
+
+        <div className="mt-auto flex items-center justify-between gap-3 pt-3 border-t border-ink/10">
+          <span className="inline-flex items-center gap-1.5 text-[11px] font-bold brut-label text-textmain">
+            <span className="h-2.5 w-2.5 rounded-full shrink-0" style={{ backgroundColor: langColor(language) }} />
             {language}
           </span>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-5">
             <a
               href={repo.html_url}
               target="_blank"
               rel="noreferrer"
               onClick={(e) => e.stopPropagation()}
-              className="inline-flex items-center gap-2 rounded-xl border border-primary/20 bg-bg/80 px-3 py-2 text-sm text-textmain hover:bg-primary/10 transition"
+              className="text-xs font-bold brut-label text-textmain border-b-2 border-transparent hover:border-primary hover:text-primary transition pb-0.5"
             >
-              <svg viewBox="0 0 24 24" className="w-4 h-4 text-textmain" aria-hidden="true">
-                <path
-                  fill="currentColor"
-                  d="M12 .5C5.73.5.75 5.6.75 12c0 5.13 3.29 9.48 7.86 11.02.58.11.79-.26.79-.57v-2.1c-3.2.71-3.88-1.4-3.88-1.4-.52-1.37-1.27-1.73-1.27-1.73-1.04-.74.08-.73.08-.73 1.15.08 1.76 1.22 1.76 1.22 1.02 1.78 2.68 1.26 3.33.96.1-.76.4-1.26.72-1.55-2.55-.3-5.23-1.3-5.23-5.78 0-1.28.45-2.33 1.18-3.15-.12-.3-.51-1.52.11-3.18 0 0 .97-.32 3.18 1.2a10.6 10.6 0 0 1 2.9-.4c.98 0 1.97.14 2.9.4 2.2-1.52 3.17-1.2 3.17-1.2.63 1.66.24 2.88.12 3.18.73.82 1.18 1.87 1.18 3.15 0 4.49-2.69 5.48-5.25 5.77.41.37.77 1.1.77 2.22v3.28c0 .32.2.69.8.57A11.29 11.29 0 0 0 23.25 12C23.25 5.6 18.27.5 12 .5Z"
-                />
-              </svg>
               Code
             </a>
             {homepage && (
@@ -400,14 +535,9 @@ export function ProjectCard({ repo, index, onOpen }) {
                 target="_blank"
                 rel="noreferrer"
                 onClick={(e) => e.stopPropagation()}
-                className="inline-flex items-center gap-1.5 rounded-xl bg-primary px-3.5 py-2 text-sm font-medium text-white shadow-sm hover:shadow-md hover:opacity-90 transition"
+                className="text-xs font-bold brut-label text-primary border-b-2 border-primary hover:border-transparent transition pb-0.5"
               >
-                Live
-                <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
-                  <polyline points="15 3 21 3 21 9" />
-                  <line x1="10" y1="14" x2="21" y2="3" />
-                </svg>
+                Live →
               </a>
             )}
           </div>

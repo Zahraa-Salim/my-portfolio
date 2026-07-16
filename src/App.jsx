@@ -4,10 +4,12 @@ import Navbar from "./components/Navbar";
 import Hero from "./components/Hero";
 import About from "./components/About";
 import Skills from "./components/Skills";
+import Experience from "./components/Experience";
 import ProjectsPreview from "./components/ProjectsPreview";
 import ProjectsPage from "./components/ProjectsPage";
 import Contact from "./components/Contact";
 import Footer from "./components/Footer";
+import BackgroundFX from "./components/BackgroundFX";
 
 function HomePage() {
   const location = useLocation();
@@ -29,6 +31,7 @@ function HomePage() {
       <Hero />
       <About />
       <Skills />
+      <Experience />
       <ProjectsPreview />
       <Contact />
     </main>
@@ -57,20 +60,23 @@ function ScrollToTop() {
 export default function App() {
   return (
     <div className="bg-bg text-textmain min-h-screen overflow-x-hidden">
-      <ScrollToTop />
-      <Navbar />
-      <Routes>
-        <Route path="/" element={<HomePage />} />
-        <Route
-          path="/projects"
-          element={
-            <main className="pt-[72px]">
-              <ProjectsPage />
-            </main>
-          }
-        />
-      </Routes>
-      <Footer />
+      <BackgroundFX />
+      <div className="relative z-10">
+        <ScrollToTop />
+        <Navbar />
+        <Routes>
+          <Route path="/" element={<HomePage />} />
+          <Route
+            path="/projects"
+            element={
+              <main className="pt-[72px]">
+                <ProjectsPage />
+              </main>
+            }
+          />
+        </Routes>
+        <Footer />
+      </div>
     </div>
   );
 }

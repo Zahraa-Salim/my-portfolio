@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { motion } from "framer-motion";
 
 const fadeUp = {
@@ -12,99 +13,196 @@ const tr = (delay) => ({
   ease: [0.25, 0.46, 0.45, 0.94],
 });
 
+const EMAIL = "zahraa.salim01@gmail.com";
+
+// Optional: paste your Formspree form ID (e.g. "xxxxabcd") to enable
+// real submissions. While empty, the form falls back to a mailto: draft.
+const FORMSPREE_ID = "";
+
 export default function Contact() {
+  const [form, setForm] = useState({ name: "", email: "", message: "" });
+  const [status, setStatus] = useState("idle"); // idle | sending | success | error
+  const [errors, setErrors] = useState({});
+
+  const update = (key) => (e) => {
+    setForm((f) => ({ ...f, [key]: e.target.value }));
+    setErrors((prev) => ({ ...prev, [key]: undefined }));
+  };
+
+  const validate = () => {
+    const next = {};
+    if (!form.name.trim()) next.name = "Required";
+    if (!form.email.trim()) next.email = "Required";
+    else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) next.email = "Invalid email";
+    if (!form.message.trim()) next.message = "Required";
+    setErrors(next);
+    return Object.keys(next).length === 0;
+  };
+
+  const mailtoFallback = () => {
+    const subject = encodeURIComponent(`Portfolio message from ${form.name}`);
+    const body = encodeURIComponent(`${form.message}\n\n— ${form.name} (${form.email})`);
+    window.location.href = `mailto:${EMAIL}?subject=${subject}&body=${body}`;
+  };
+
+  const onSubmit = async (e) => {
+    e.preventDefault();
+    if (!validate()) return;
+
+    // No Formspree ID configured → open a pre-filled email draft instead.
+    if (!FORMSPREE_ID) {
+      mailtoFallback();
+      setStatus("success");
+      return;
+    }
+
+    try {
+      setStatus("sending");
+      const res = await fetch(`https://formspree.io/f/${FORMSPREE_ID}`, {
+        method: "POST",
+        headers: { Accept: "application/json", "Content-Type": "application/json" },
+        body: JSON.stringify(form),
+      });
+      if (!res.ok) throw new Error("Failed to send");
+      setStatus("success");
+      setForm({ name: "", email: "", message: "" });
+    } catch {
+      setStatus("error");
+    }
+  };
+
+  const fieldBase =
+    "w-full bg-transparent border-0 border-b-2 border-ink/25 px-0 py-2.5 text-textmain font-medium placeholder:text-muted/70 focus:outline-none focus:border-primary transition-colors";
+
   return (
-    <section id="contact" className="bg-bg relative overflow-hidden">
-      <div className="pointer-events-none absolute inset-0">
-        <div className="absolute -top-24 -right-24 h-80 w-80 rounded-full bg-primary/10 blur-3xl" />
-        <div className="absolute -bottom-28 -left-28 h-96 w-96 rounded-full bg-primary/10 blur-3xl" />
-      </div>
-
-      <div className="relative max-w-4xl mx-auto px-4 sm:px-6 py-16">
+    <section id="contact" className="relative overflow-hidden">
+      <div className="relative max-w-6xl mx-auto px-4 sm:px-6 py-16">
         {/* Header */}
-        <motion.div {...fadeUp} transition={tr(0)} className="text-center">
-          <p className="text-sm text-muted">Contact</p>
-          <h2 className="text-2xl sm:text-3xl font-bold text-textmain mt-2">
-            Let's work together
-          </h2>
-          <p className="text-sm sm:text-base text-muted mt-3 max-w-xl mx-auto leading-relaxed">
-            I'm open to internships, junior developer roles, and freelance projects.
-            Feel free to reach out — I'd love to connect.
-          </p>
-          <div className="w-16 h-1 bg-primary rounded-full mt-4 mx-auto" />
-        </motion.div>
+        <div className="flex items-end gap-4">
+          <span className="brut-label text-sm font-bold text-primary">04</span>
+          <div className="flex-1 h-[3px] bg-ink" />
+          <span className="brut-label text-sm font-bold text-muted">Contact</span>
+        </div>
 
-        {/* Contact methods */}
-        <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4">
-          {/* Email */}
-          <motion.a
-            {...fadeUp}
-            transition={tr(0.15)}
-            whileHover={{ y: -4, boxShadow: "0 8px 20px -4px rgba(161,188,152,0.25)" }}
-            href="mailto:zahraa.salim01@gmail.com"
-            className="w-full sm:w-auto flex items-center justify-center gap-2 rounded-xl bg-primary text-white font-medium px-6 py-3 shadow-sm transition"
-          >
-            <svg
-              viewBox="0 0 24 24"
-              fill="none"
-              className="w-5 h-5"
-              stroke="currentColor"
-              strokeWidth="1.8"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              aria-hidden="true"
-            >
-              <path d="M4 6h16v12H4z" />
-              <path d="m4 7 8 6 8-6" />
-            </svg>
-            Send Email
-          </motion.a>
+        <motion.h2
+          {...fadeUp}
+          transition={tr(0.05)}
+          className="mt-6 text-4xl sm:text-6xl font-extrabold text-textmain uppercase tracking-tight leading-[0.95]"
+        >
+          Let's work <span className="text-accent">together</span>
+        </motion.h2>
+        <motion.p
+          {...fadeUp}
+          transition={tr(0.12)}
+          className="text-muted mt-4 max-w-2xl leading-relaxed"
+        >
+          I'm always happy to connect — for freelance projects, collaborations,
+          or just to talk tech. Send a message or reach out directly.
+        </motion.p>
 
-          {/* LinkedIn */}
-          <motion.a
+        <div className="mt-10 grid lg:grid-cols-5 gap-8">
+          {/* Form */}
+          <motion.form
             {...fadeUp}
-            transition={tr(0.25)}
-            whileHover={{ y: -4, boxShadow: "0 8px 20px -4px rgba(161,188,152,0.15)" }}
-            href="https://www.linkedin.com/in/zahraa-salim/"
-            target="_blank"
-            rel="noreferrer"
-            className="w-full sm:w-auto flex items-center justify-center gap-2 rounded-xl border border-primary/30 px-6 py-3 text-textmain transition"
+            transition={tr(0.18)}
+            onSubmit={onSubmit}
+            noValidate
+            className="lg:col-span-3 border-l-[3px] border-primary pl-6 sm:pl-8"
           >
-            <svg
-              viewBox="0 0 24 24"
-              fill="none"
-              className="w-5 h-5"
-              stroke="currentColor"
-              strokeWidth="1.8"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              aria-hidden="true"
-            >
-              <path d="M6 9v12" />
-              <path d="M6 6.5a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3Z" />
-              <path d="M10 21v-7a4 4 0 0 1 8 0v7" />
-            </svg>
-            LinkedIn Profile
-          </motion.a>
+            <div className="grid sm:grid-cols-2 gap-5">
+              <div>
+                <label className="brut-label text-xs font-bold text-textmain block mb-2">
+                  Name {errors.name && <span className="text-primary">— {errors.name}</span>}
+                </label>
+                <input
+                  type="text"
+                  value={form.name}
+                  onChange={update("name")}
+                  placeholder="Your name"
+                  className={fieldBase}
+                />
+              </div>
+              <div>
+                <label className="brut-label text-xs font-bold text-textmain block mb-2">
+                  Email {errors.email && <span className="text-primary">— {errors.email}</span>}
+                </label>
+                <input
+                  type="email"
+                  value={form.email}
+                  onChange={update("email")}
+                  placeholder="you@example.com"
+                  className={fieldBase}
+                />
+              </div>
+            </div>
 
-          {/* GitHub */}
-          <motion.a
-            {...fadeUp}
-            transition={tr(0.35)}
-            whileHover={{ y: -4, boxShadow: "0 8px 20px -4px rgba(161,188,152,0.15)" }}
-            href="https://github.com/Zahraa-Salim"
-            target="_blank"
-            rel="noreferrer"
-            className="w-full sm:w-auto flex items-center justify-center gap-2 rounded-xl border border-primary/30 px-6 py-3 text-textmain transition"
-          >
-            <svg viewBox="0 0 24 24" className="w-5 h-5" aria-hidden="true">
-              <path
-                fill="currentColor"
-                d="M12 .5C5.73.5.75 5.6.75 12c0 5.13 3.29 9.48 7.86 11.02.58.11.79-.26.79-.57v-2.1c-3.2.71-3.88-1.4-3.88-1.4-.52-1.37-1.27-1.73-1.27-1.73-1.04-.74.08-.73.08-.73 1.15.08 1.76 1.22 1.76 1.22 1.02 1.78 2.68 1.26 3.33.96.1-.76.4-1.26.72-1.55-2.55-.3-5.23-1.3-5.23-5.78 0-1.28.45-2.33 1.18-3.15-.12-.3-.51-1.52.11-3.18 0 0 .97-.32 3.18 1.2a10.6 10.6 0 0 1 2.9-.4c.98 0 1.97.14 2.9.4 2.2-1.52 3.17-1.2 3.17-1.2.63 1.66.24 2.88.12 3.18.73.82 1.18 1.87 1.18 3.15 0 4.49-2.69 5.48-5.25 5.77.41.37.77 1.1.77 2.22v3.28c0 .32.2.69.8.57A11.29 11.29 0 0 0 23.25 12C23.25 5.6 18.27.5 12 .5Z"
+            <div className="mt-5">
+              <label className="brut-label text-xs font-bold text-textmain block mb-2">
+                Message {errors.message && <span className="text-primary">— {errors.message}</span>}
+              </label>
+              <textarea
+                rows={5}
+                value={form.message}
+                onChange={update("message")}
+                placeholder="Tell me about your project or opportunity…"
+                className={`${fieldBase} resize-none`}
               />
-            </svg>
-            GitHub Projects
-          </motion.a>
+            </div>
+
+            <div className="mt-7 flex flex-wrap items-center gap-5">
+              <button
+                type="submit"
+                disabled={status === "sending"}
+                className="bg-primary text-white font-bold brut-label text-sm px-8 py-3 transition hover:-translate-y-0.5 active:translate-y-0 disabled:opacity-60"
+              >
+                {status === "sending" ? "Sending…" : "Send Message"}
+              </button>
+
+              {status === "success" && (
+                <span className="brut-label text-xs font-bold text-accent border-l-2 border-accent pl-3">
+                  {FORMSPREE_ID ? "Message sent — thank you!" : "Opening your email app…"}
+                </span>
+              )}
+              {status === "error" && (
+                <span className="brut-label text-xs font-bold text-primary border-l-2 border-primary pl-3">
+                  Something went wrong — email me directly.
+                </span>
+              )}
+            </div>
+          </motion.form>
+
+          {/* Direct links */}
+          <motion.div
+            {...fadeUp}
+            transition={tr(0.26)}
+            className="lg:col-span-2 flex flex-col gap-6"
+          >
+            <a
+              href={`mailto:${EMAIL}`}
+              className="block border-l-[3px] border-accent pl-5 transition hover:pl-6"
+            >
+              <p className="brut-label text-[10px] text-accent">Email</p>
+              <p className="font-bold text-lg mt-1 break-all text-textmain">{EMAIL}</p>
+            </a>
+            <a
+              href="https://www.linkedin.com/in/zahraa-salim/"
+              target="_blank"
+              rel="noreferrer"
+              className="block border-l-[3px] border-primary pl-5 transition hover:pl-6"
+            >
+              <p className="brut-label text-[10px] text-primary">LinkedIn</p>
+              <p className="font-bold text-lg mt-1 text-textmain">in/zahraa-salim</p>
+            </a>
+            <a
+              href="https://github.com/Zahraa-Salim"
+              target="_blank"
+              rel="noreferrer"
+              className="block border-l-[3px] border-accent pl-5 transition hover:pl-6"
+            >
+              <p className="brut-label text-[10px] text-accent">GitHub</p>
+              <p className="font-bold text-lg mt-1 text-textmain">@Zahraa-Salim</p>
+            </a>
+          </motion.div>
         </div>
       </div>
     </section>

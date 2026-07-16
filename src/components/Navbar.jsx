@@ -46,10 +46,8 @@ export default function Navbar() {
 
   const shouldShow = !modalActive;
 
-  const linkBase = "relative px-3 py-2 rounded-full transition duration-200 active:scale-[0.97]";
-  const linkHover = "hover:bg-primary/20 hover:text-textmain";
-  const linkUnderline =
-    "after:content-[''] after:absolute after:left-3 after:right-3 after:-bottom-0.5 after:h-0.5 after:rounded-full after:bg-primary after:scale-x-0 after:origin-center after:transition after:duration-200 hover:after:scale-x-100";
+  const linkBase =
+    "px-1 py-1.5 font-semibold text-textmain transition-colors duration-150 border-b-2 border-transparent hover:border-primary hover:text-primary";
 
   // Navigate to hash section — if already on home, just scroll; if on another page, navigate then scroll
   const goToSection = (hash) => (e) => {
@@ -63,6 +61,14 @@ export default function Navbar() {
     }
   };
 
+  const navItems = [
+    { hash: "#about", label: "About" },
+    { hash: "#skills", label: "Skills" },
+    { hash: "#experience", label: "Experience" },
+    { to: "/projects", label: "Projects" },
+    { hash: "#contact", label: "Contact" },
+  ];
+
   return (
     <header
       className={[
@@ -71,81 +77,72 @@ export default function Navbar() {
         shouldShow ? "opacity-100 translate-y-0" : "opacity-0 -translate-y-3 pointer-events-none",
       ].join(" ")}
     >
-      <div className="border-b border-primary/25 bg-bg/95">
+      <div className="border-b-[3px] border-ink bg-bg">
         <nav className="max-w-6xl mx-auto px-4 sm:px-6 h-[72px] flex items-center justify-between">
           <Link
             to="/"
-            className="mr-auto -ml-2 sm:ml-0 px-2 py-1 rounded-lg hover:bg-primary/10 transition"
+            className="mr-auto py-1"
             onClick={() => setOpen(false)}
           >
-            <span className="text-xl font-semibold tracking-wide text-textmain">
-              Zahraa{" "}
-              <span className="bg-gradient-to-r from-primary to-muted bg-clip-text text-transparent">
-                Salim
-              </span>
+            <span className="text-lg font-extrabold tracking-tight brut-label text-textmain">
+              ZAHRAA<span className="text-primary">·</span>SALIM
             </span>
           </Link>
 
-          <ul className="hidden md:flex items-center gap-2 text-sm font-medium text-muted">
-            <li>
-              <a href="#about" onClick={goToSection("#about")} className={`${linkBase} ${linkHover} ${linkUnderline}`}>
-                About
-              </a>
-            </li>
-            <li>
-              <a href="#skills" onClick={goToSection("#skills")} className={`${linkBase} ${linkHover} ${linkUnderline}`}>
-                Skills
-              </a>
-            </li>
-            <li>
-              <Link to="/projects" onClick={() => window.scrollTo(0, 0)} className={`${linkBase} ${linkHover} ${linkUnderline}`}>
-                Projects
-              </Link>
-            </li>
-            <li>
-              <a href="#contact" onClick={goToSection("#contact")} className={`${linkBase} ${linkHover} ${linkUnderline}`}>
-                Contact
-              </a>
-            </li>
+          <ul className="hidden md:flex items-center gap-5 text-sm">
+            {navItems.map((item) =>
+              item.to ? (
+                <li key={item.label}>
+                  <Link
+                    to={item.to}
+                    onClick={() => window.scrollTo(0, 0)}
+                    className={linkBase}
+                  >
+                    {item.label}
+                  </Link>
+                </li>
+              ) : (
+                <li key={item.label}>
+                  <a href={item.hash} onClick={goToSection(item.hash)} className={linkBase}>
+                    {item.label}
+                  </a>
+                </li>
+              )
+            )}
 
-            <li className="ml-2">
+            <li className="ml-1">
               <a
                 href="https://wa.me/96176461380?text=Hi%20Zahraa%2C%20I%20found%20your%20portfolio%20and%20I%27d%20like%20to%20talk."
                 target="_blank"
                 rel="noreferrer"
-                className="px-4 py-2 rounded-full bg-primary text-white hover:opacity-90 hover:shadow-md transition shadow-sm active:scale-[0.97]"
+                className="px-4 py-2 bg-primary text-white font-bold brut-label text-xs transition hover:-translate-y-0.5"
               >
-                Let's talk
+                Let's Talk
               </a>
             </li>
           </ul>
 
           <button
             type="button"
-            className="md:hidden ml-3 inline-flex items-center justify-center w-10 h-10 rounded-xl border border-primary/30 bg-surface/60 hover:bg-surface/80 transition text-textmain"
+            className="md:hidden ml-3 px-3 h-10 bg-primary text-white font-bold brut-label text-xs transition hover:-translate-y-0.5"
             onClick={() => setOpen((v) => !v)}
             aria-label="Toggle menu"
             aria-expanded={open}
           >
-            <span className="text-2xl leading-none select-none">{open ? "✕" : "☰"}</span>
+            {open ? "Close" : "Menu"}
           </button>
         </nav>
 
         <div className={`md:hidden ${open ? "block" : "hidden"}`}>
-          <div className="px-4 sm:px-6 pb-4">
-            <div className="bg-surface/70 border border-primary/25 rounded-2xl p-3 shadow-sm">
-              {[
-                { hash: "#about", label: "About" },
-                { hash: "#skills", label: "Skills" },
-                { to: "/projects", label: "Projects" },
-                { hash: "#contact", label: "Contact" },
-              ].map((item) =>
+          <div className="px-4 sm:px-6 pb-4 pt-1">
+            <div className="bg-surface border-t-2 border-primary">
+              {navItems.map((item) =>
                 item.to ? (
                   <Link
                     key={item.label}
                     to={item.to}
                     onClick={() => { setOpen(false); window.scrollTo(0, 0); }}
-                    className="block px-4 py-3 rounded-xl text-textmain hover:bg-primary/15 transition"
+                    className="block px-2 py-3 font-semibold text-textmain border-b border-ink/10 last:border-b-0 hover:text-primary hover:pl-3 transition-all"
                   >
                     {item.label}
                   </Link>
@@ -154,7 +151,7 @@ export default function Navbar() {
                     key={item.label}
                     href={item.hash}
                     onClick={goToSection(item.hash)}
-                    className="block px-4 py-3 rounded-xl text-textmain hover:bg-primary/15 transition"
+                    className="block px-2 py-3 font-semibold text-textmain border-b border-ink/10 hover:text-primary hover:pl-3 transition-all"
                   >
                     {item.label}
                   </a>
@@ -166,9 +163,9 @@ export default function Navbar() {
                 target="_blank"
                 rel="noreferrer"
                 onClick={() => setOpen(false)}
-                className="mt-2 block text-center px-4 py-3 rounded-xl bg-primary text-white hover:opacity-90 transition"
+                className="mt-3 block text-center px-4 py-3 bg-primary text-white font-bold brut-label text-xs"
               >
-                Let's talk
+                Let's Talk
               </a>
             </div>
           </div>

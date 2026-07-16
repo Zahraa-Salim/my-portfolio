@@ -1,12 +1,18 @@
 @config "../tailwind.config.cjs";
 @import "tailwindcss";
 
+/* ─────────────────────────────────────────────────────────────
+   NEO-BRUTALIST PALETTE — coral / teal on warm cream
+   All colors are RGB triplets so Tailwind can apply <alpha-value>
+   ───────────────────────────────────────────────────────────── */
 :root {
-  --bg: 241 243 224;
-  --surface: 210 220 182;
-  --primary: 161 188 152;
-  --textmain: 47 58 44;
-  --muted: 119 136 115;
+  --bg: 255 243 228;        /* warm cream */
+  --surface: 255 255 255;   /* white panels */
+  --primary: 255 94 58;     /* coral */
+  --accent: 17 155 142;     /* teal */
+  --textmain: 26 22 20;     /* near-black ink */
+  --muted: 92 84 79;        /* warm gray */
+  --ink: 26 22 20;          /* border / shadow color */
 }
 
 html {
@@ -17,17 +23,18 @@ html, body {
   width: 100%;
   overflow-x: hidden;
   background: rgb(var(--bg));
+  font-family: "JetBrains Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
 }
 
 body {
   overflow-x: hidden;
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
-  cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 20 20'%3E%3Ccircle cx='10' cy='10' r='4' fill='none' stroke='rgb(161,188,152)' stroke-width='1.5'/%3E%3Ccircle cx='10' cy='10' r='1.5' fill='rgb(47,58,44)'/%3E%3C/svg%3E") 10 10, auto;
+  cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 20 20'%3E%3Crect x='5' y='5' width='10' height='10' fill='rgb(255,94,58)' stroke='rgb(26,22,20)' stroke-width='2'/%3E%3C/svg%3E") 10 10, auto;
 }
 
 a, button, [role="button"], input[type="submit"], select, summary {
-  cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24'%3E%3Ccircle cx='12' cy='12' r='5' fill='none' stroke='rgb(161,188,152)' stroke-width='1.5'/%3E%3Ccircle cx='12' cy='12' r='2' fill='rgb(47,58,44)'/%3E%3C/svg%3E") 12 12, pointer;
+  cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24'%3E%3Crect x='5' y='5' width='14' height='14' fill='rgb(17,155,142)' stroke='rgb(26,22,20)' stroke-width='2'/%3E%3C/svg%3E") 12 12, pointer;
 }
 
 body.modal-open {
@@ -60,24 +67,25 @@ body {
 /* ── Global page scrollbar ── */
 html {
   scrollbar-width: thin;
-  scrollbar-color: rgb(161 188 152 / 0.5) transparent;
+  scrollbar-color: rgb(var(--primary)) rgb(var(--bg));
 }
 
 html::-webkit-scrollbar {
-  width: 8px;
+  width: 12px;
 }
 
 html::-webkit-scrollbar-track {
-  background: transparent;
+  background: rgb(var(--bg));
+  border-left: 2px solid rgb(var(--ink));
 }
 
 html::-webkit-scrollbar-thumb {
-  background: rgb(161 188 152 / 0.4);
-  border-radius: 999px;
+  background: rgb(var(--primary));
+  border: 2px solid rgb(var(--ink));
 }
 
 html::-webkit-scrollbar-thumb:hover {
-  background: rgb(161 188 152 / 0.6);
+  background: rgb(var(--accent));
 }
 
 /* ── Styled scrollbar (modal, etc.) ── */
@@ -87,7 +95,7 @@ html::-webkit-scrollbar-thumb:hover {
 }
 
 .styled-scrollbar::-webkit-scrollbar {
-  width: 6px;
+  width: 8px;
 }
 
 .styled-scrollbar::-webkit-scrollbar-track {
@@ -96,16 +104,71 @@ html::-webkit-scrollbar-thumb:hover {
 }
 
 .styled-scrollbar::-webkit-scrollbar-thumb {
-  background: rgb(var(--primary) / 0.4);
-  border-radius: 999px;
+  background: rgb(var(--primary));
+  border-radius: 0;
 }
 
 .styled-scrollbar::-webkit-scrollbar-thumb:hover {
-  background: rgb(var(--primary) / 0.6);
+  background: rgb(var(--accent));
+}
+
+/* ─────────────────────────────────────────────────────────────
+   NEO-BRUTALIST UTILITIES
+   Hard borders + solid offset shadows (no blur), tactile hovers.
+   ───────────────────────────────────────────────────────────── */
+
+/* Base block: thick border + solid offset shadow */
+.brut {
+  border: 3px solid rgb(var(--ink));
+  box-shadow: 6px 6px 0 0 rgb(var(--ink));
+}
+
+/* Thinner variant for smaller UI (chips, inputs) */
+.brut-sm {
+  border: 2px solid rgb(var(--ink));
+  box-shadow: 3px 3px 0 0 rgb(var(--ink));
+}
+
+/* Lift toward the viewer — shadow grows on hover */
+.brut-hover {
+  transition: transform 0.12s ease, box-shadow 0.12s ease;
+}
+.brut-hover:hover {
+  transform: translate(-2px, -2px);
+  box-shadow: 8px 8px 0 0 rgb(var(--ink));
+}
+
+/* Press into the page — shadow shrinks (good for buttons) */
+.brut-press {
+  transition: transform 0.1s ease, box-shadow 0.1s ease;
+}
+.brut-press:hover {
+  transform: translate(2px, 2px);
+  box-shadow: 3px 3px 0 0 rgb(var(--ink));
+}
+.brut-press:active {
+  transform: translate(4px, 4px);
+  box-shadow: 1px 1px 0 0 rgb(var(--ink));
+}
+
+/* Uppercase mono label used for section eyebrows / tags */
+.brut-label {
+  font-family: "JetBrains Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
 }
 
 /* ── Smooth fade-slide-up utility ── */
 @keyframes fadeSlideUp {
   from { opacity: 0; transform: translateY(16px); }
   to   { opacity: 1; transform: translateY(0); }
+}
+
+/* Marquee for the moving strip */
+@keyframes brutMarquee {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }
+}
+.brut-marquee {
+  animation: brutMarquee 22s linear infinite;
 }

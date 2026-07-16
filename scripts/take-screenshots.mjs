@@ -63,6 +63,7 @@ async function main() {
         path: outPath,
         type: "webp",
         quality: 82,
+        fullPage: true, // capture the whole page so cards can "scroll" on hover
       });
 
       await page.close();

@@ -9,11 +9,6 @@ const fadeUp = (delay = 0) => ({
   transition: { duration: 0.6, delay, ease: [0.25, 0.46, 0.45, 0.94] },
 });
 
-const cardHover = {
-  whileHover: { y: -4, boxShadow: "0 8px 24px -4px rgba(161,188,152,0.2)" },
-  transition: { type: "spring", stiffness: 300, damping: 20 },
-};
-
 export default function Hero() {
   const [imgOk, setImgOk] = useState(true);
 
@@ -23,10 +18,10 @@ export default function Hero() {
 
   const roles = useMemo(
     () => [
-      "Full-Stack Developer",
+      "Full-Stack Web Developer",
+      "React & Next.js Developer",
       "Flutter Developer",
-      "React Developer",
-      "Laravel (APIs) + Firebase",
+      "Laravel & Node.js APIs",
     ],
     []
   );
@@ -79,283 +74,131 @@ export default function Hero() {
     };
   }, [cvOpen]);
 
-  return (
-    <section id="hero" className="bg-bg pt-[88px] sm:pt-[56px]">
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 py-10 sm:py-14">
-        <div className="relative overflow-visible rounded-[36px] bg-bg border border-primary/30 shadow-sm">
-          {/* blobs with subtle animation */}
-          <motion.div
-            className="pointer-events-none absolute -top-20 -right-24 h-72 w-72 rounded-full bg-primary/18 blur-3xl"
-            animate={{ scale: [1, 1.08, 1], x: [0, 8, 0] }}
-            transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
-          />
-          <motion.div
-            className="pointer-events-none absolute -bottom-24 -left-24 h-72 w-72 rounded-full bg-primary/14 blur-3xl"
-            animate={{ scale: [1, 1.06, 1], y: [0, -8, 0] }}
-            transition={{ duration: 10, repeat: Infinity, ease: "easeInOut" }}
-          />
+  const cards = [
+    { label: "Focus", value: "Turning ideas into real, production-ready products", bar: "border-primary" },
+    { label: "Stack", value: "React • Next.js • Laravel • Node.js • Flutter", bar: "border-accent" },
+    { label: "Approach", value: "User-first design • Clean architecture • Ship fast", bar: "border-primary" },
+  ];
 
-          <div className="relative overflow-visible px-7 pb-7 pt-16 sm:p-10">
-            {/* MOBILE avatar */}
-            <motion.div
-              {...fadeUp(0)}
-              className="sm:hidden absolute left-1/2 top-0 -translate-x-1/2 -translate-y-1/2"
-            >
-              {imgOk ? (
-                <img
-                  src="/profile.png"
-                  alt="Zahraa Salim"
-                  loading="lazy"
-                  decoding="async"
-                  className="h-[92px] w-[92px] rounded-full object-cover border-4 border-bg shadow-md"
-                  onError={() => setImgOk(false)}
-                />
-              ) : (
-                <div className="h-[92px] w-[92px] rounded-full bg-primary/18 border-4 border-bg shadow-md flex items-center justify-center text-2xl font-semibold text-primary">
-                  ZS
-                </div>
-              )}
+  return (
+    <section id="hero" className="pt-[104px] sm:pt-[88px]">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 py-10 sm:py-14">
+        {/* Name + role + location */}
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-5">
+          <motion.div {...fadeUp(0.1)} className="flex items-center gap-4">
+            {imgOk ? (
+              <img
+                src="/profile.png"
+                alt="Zahraa Salim"
+                loading="lazy"
+                decoding="async"
+                className="h-16 w-16 sm:h-20 sm:w-20 rounded-full object-cover border-2 border-ink"
+                onError={() => setImgOk(false)}
+              />
+            ) : (
+              <div className="h-16 w-16 sm:h-20 sm:w-20 rounded-full border-2 border-ink bg-primary flex items-center justify-center text-xl font-extrabold text-white">
+                ZS
+              </div>
+            )}
+            <div>
+              <h1 className="text-4xl sm:text-6xl font-extrabold leading-[0.95] tracking-tight text-textmain uppercase">
+                Zahraa Salim
+              </h1>
+              <p className="mt-2 min-w-[18ch] brut-label text-sm text-primary font-bold">
+                {typed}
+                <span className="inline-block w-[2px] h-4 bg-accent align-[-2px] ml-1 animate-pulse" />
+              </p>
+            </div>
+          </motion.div>
+
+          <motion.div {...fadeUp(0.25)} className="brut-label text-xs font-bold text-accent border-l-2 border-accent pl-3">
+            Based in
+            <br />
+            Lebanon
+          </motion.div>
+        </div>
+
+        {/* Divider */}
+        <motion.div {...fadeUp(0.3)} className="mt-8 h-px w-full bg-ink/15" />
+
+        {/* Content */}
+        <div className="mt-8 grid gap-10 lg:grid-cols-2 lg:items-start">
+          {/* Left */}
+          <div className="space-y-6">
+            <motion.p {...fadeUp(0.35)} className="text-lg sm:text-xl text-textmain leading-relaxed">
+              I build digital products from the ground up — crafting{" "}
+              <span className="font-bold text-primary">mobile experiences</span>,{" "}
+              <span className="font-bold text-accent">web applications</span>, and the{" "}
+              <span className="font-bold text-primary">backend systems</span> that power them.
+              Every project starts with purpose and ends with polish.
+            </motion.p>
+
+            <motion.p {...fadeUp(0.4)} className="text-textmain font-medium italic leading-relaxed border-l-[3px] border-primary pl-4">
+              "I don't just write code — I build solutions that users love to use."
+            </motion.p>
+
+            {/* Specialty */}
+            <motion.div {...fadeUp(0.45)} className="border-l-[3px] border-accent pl-5">
+              <p className="text-xs brut-label text-muted">Specialty</p>
+              <p className="font-bold text-textmain mt-1">
+                React • Next.js • Laravel • Node.js • Flutter
+              </p>
             </motion.div>
 
-            {/* Title + typewriter + location */}
-            <div className="w-full">
-              <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3">
-                {/* LEFT: Desktop avatar beside name */}
-                <motion.div {...fadeUp(0.1)} className="flex flex-col sm:flex-row sm:items-center gap-4">
-                  <div className="hidden sm:block">
-                    {imgOk ? (
-                      <img
-                        src="/profile.png"
-                        alt="Zahraa Salim"
-                        loading="lazy"
-                        decoding="async"
-                        className="h-16 w-16 rounded-full object-cover border-2 border-primary/25 shadow-sm"
-                        onError={() => setImgOk(false)}
-                      />
-                    ) : (
-                      <div className="h-16 w-16 rounded-full bg-primary/18 border-2 border-primary/25 shadow-sm flex items-center justify-center text-lg font-semibold text-primary">
-                        ZS
-                      </div>
-                    )}
-                  </div>
-
-                  <div>
-                    <h1 className="text-3xl sm:text-4xl font-bold leading-tight text-textmain text-center sm:text-left">
-                      Zahraa Salim
-                    </h1>
-                    <p className="text-muted mt-1 flex items-center justify-center sm:justify-start gap-2">
-                      <span className="inline-block min-w-[18ch]">
-                        {typed}
-                        <span className="inline-block w-[1px] h-5 bg-primary align-[-3px] ml-1 animate-pulse" />
-                      </span>
-                    </p>
-                  </div>
-                </motion.div>
-
-                {/* Location */}
-                <motion.div {...fadeUp(0.25)} className="flex justify-center sm:justify-end">
-                  <span className="inline-flex items-center gap-2 rounded-full border border-primary/25 bg-primary/10 px-4 py-2 text-sm text-textmain">
-                    <svg
-                      viewBox="0 0 24 24"
-                      className="w-4 h-4 text-textmain"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="1.8"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      aria-hidden="true"
-                    >
-                      <path d="M12 21s7-4.5 7-11a7 7 0 1 0-14 0c0 6.5 7 11 7 11Z" />
-                      <path d="M12 10.5a2 2 0 1 0 0-4 2 2 0 0 0 0 4Z" />
-                    </svg>
-                    Lebanon
-                  </span>
-                </motion.div>
-              </div>
-            </div>
-
-            {/* Divider */}
-            <motion.div
-              {...fadeUp(0.3)}
-              className="mt-6 sm:mt-7 h-px w-full bg-primary/25"
-            />
-
-            {/* Content */}
-            <div className="mt-7 grid gap-8 lg:grid-cols-2 lg:items-start">
-              {/* Left */}
-              <div className="space-y-5 sm:space-y-6">
-                <motion.p {...fadeUp(0.35)} className="text-lg text-textmain leading-relaxed">
-                  I build digital products from the ground up — crafting{" "}
-                  <span className="font-semibold">mobile experiences</span>,{" "}
-                  <span className="font-semibold">web applications</span>, and the{" "}
-                  <span className="font-semibold">backend systems</span> that power them.
-                  Every project starts with purpose and ends with polish.
-                </motion.p>
-
-                <motion.p {...fadeUp(0.4)} className="text-textmain/90 italic leading-relaxed">
-                  "I don't just write code — I build solutions that users love to use."
-                </motion.p>
-
-                {/* Specialty */}
-                <motion.div
-                  {...fadeUp(0.45)}
-                  className="w-full flex items-center gap-3 rounded-2xl border border-primary/25 bg-bg px-5 py-4"
+            {/* Actions */}
+            <motion.div {...fadeUp(0.5)} className="pt-1">
+              <div className="flex flex-wrap items-center gap-6">
+                <button
+                  type="button"
+                  onClick={openCv}
+                  className="bg-primary text-white font-bold brut-label text-sm px-7 py-3 transition hover:-translate-y-0.5 active:translate-y-0"
                 >
-                  <div>
-                    <p className="text-sm text-muted">Specialty</p>
-                    <p className="font-semibold text-textmain">
-                      Flutter • React • Laravel APIs • Firebase
-                    </p>
-                  </div>
-                </motion.div>
+                  View CV
+                </button>
 
-                {/* Actions */}
-                <motion.div {...fadeUp(0.5)} className="pt-2">
-                  <div className="flex flex-wrap items-center justify-between sm:justify-start gap-2 w-full">
-                    <button
-                      type="button"
-                      onClick={openCv}
-                      className="inline-flex items-center justify-center rounded-xl bg-primary text-white font-medium shadow-sm hover:opacity-90 transition active:scale-[0.98]
-                                 px-4 py-2.5 sm:px-6 sm:py-3"
-                    >
-                      View CV
-                    </button>
-
-                    <a
-                      href={`mailto:${email}`}
-                      className="w-11 h-11 sm:w-12 sm:h-12 inline-flex items-center justify-center rounded-xl border border-primary/35 bg-bg hover:bg-primary/10 transition active:scale-[0.98]"
-                      aria-label="Email"
-                      title="Email"
-                    >
-                      <svg
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        className="w-5 h-5 text-textmain"
-                        stroke="currentColor"
-                        strokeWidth="1.8"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        aria-hidden="true"
-                      >
-                        <path d="M4 6h16v12H4z" />
-                        <path d="m4 7 8 6 8-6" />
-                      </svg>
-                    </a>
-
-                    <a
-                      href={githubUrl}
-                      target="_blank"
-                      rel="noreferrer"
-                      className="w-11 h-11 sm:w-12 sm:h-12 inline-flex items-center justify-center rounded-xl border border-primary/35 bg-bg hover:bg-primary/10 transition active:scale-[0.98]"
-                      aria-label="GitHub"
-                      title="GitHub"
-                    >
-                      <svg viewBox="0 0 24 24" className="w-5 h-5 text-textmain" aria-hidden="true">
-                        <path
-                          fill="currentColor"
-                          d="M12 .5C5.73.5.75 5.6.75 12c0 5.13 3.29 9.48 7.86 11.02.58.11.79-.26.79-.57v-2.1c-3.2.71-3.88-1.4-3.88-1.4-.52-1.37-1.27-1.73-1.27-1.73-1.04-.74.08-.73.08-.73 1.15.08 1.76 1.22 1.76 1.22 1.02 1.78 2.68 1.26 3.33.96.1-.76.4-1.26.72-1.55-2.55-.3-5.23-1.3-5.23-5.78 0-1.28.45-2.33 1.18-3.15-.12-.3-.51-1.52.11-3.18 0 0 .97-.32 3.18 1.2a10.6 10.6 0 0 1 2.9-.4c.98 0 1.97.14 2.9.4 2.2-1.52 3.17-1.2 3.17-1.2.63 1.66.24 2.88.12 3.18.73.82 1.18 1.87 1.18 3.15 0 4.49-2.69 5.48-5.25 5.77.41.37.77 1.1.77 2.22v3.28c0 .32.2.69.8.57A11.29 11.29 0 0 0 23.25 12C23.25 5.6 18.27.5 12 .5Z"
-                        />
-                      </svg>
-                    </a>
-
-                    <a
-                      href={linkedinUrl}
-                      target="_blank"
-                      rel="noreferrer"
-                      className="w-11 h-11 sm:w-12 sm:h-12 inline-flex items-center justify-center rounded-xl border border-primary/35 bg-bg hover:bg-primary/10 transition active:scale-[0.98]"
-                      aria-label="LinkedIn"
-                      title="LinkedIn"
-                    >
-                      <svg
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        className="w-5 h-5 text-textmain"
-                        stroke="currentColor"
-                        strokeWidth="1.8"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        aria-hidden="true"
-                      >
-                        <path d="M6 9v12" />
-                        <path d="M6 6.5a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3Z" />
-                        <path d="M10 21v-7a4 4 0 0 1 8 0v7" />
-                        <path d="M10 14a4 4 0 0 1 8 0" />
-                      </svg>
-                    </a>
-                  </div>
-                </motion.div>
-              </div>
-
-              {/* Right */}
-              <div className="space-y-4">
-                {/* Desktop cards */}
-                <div className="hidden sm:grid gap-3">
-                  {[
-                    { label: "Focus", value: "Turning ideas into real, production-ready products", delay: 0.35 },
-                    { label: "Stack", value: "Flutter • React • Next.js • Laravel • Firebase", delay: 0.45 },
-                    { label: "Approach", value: "User-first design • Clean architecture • Ship fast", delay: 0.55 },
-                  ].map((card) => (
-                    <motion.div
-                      key={card.label}
-                      {...fadeUp(card.delay)}
-                      whileHover={cardHover.whileHover}
-                      className="rounded-2xl bg-bg border border-primary/20 p-5 transition cursor-default"
-                    >
-                      <p className="text-sm text-muted">{card.label}</p>
-                      <p className="font-semibold text-textmain">{card.value}</p>
-                    </motion.div>
-                  ))}
-
-                  <motion.div
-                    {...fadeUp(0.65)}
-                    whileHover={cardHover.whileHover}
-                  >
-                    <Link
-                      to="/projects" onClick={() => window.scrollTo(0, 0)}
-                      className="rounded-2xl bg-primary/10 border border-primary/25 p-5 transition block hover:bg-primary/15"
-                    >
-                      <p className="text-sm text-muted">Featured</p>
-                      <p className="font-semibold text-textmain">
-                        TalentLoop — Skill Exchange Platform
-                      </p>
-                      <p className="text-sm text-muted mt-1">
-                        Flutter + Firebase — real-time matching, profiles, and skill sharing
-                      </p>
-                    </Link>
-                  </motion.div>
+                <div className="flex flex-wrap items-center gap-5 brut-label text-sm font-bold">
+                  <a href={`mailto:${email}`} className="text-textmain border-b-2 border-transparent hover:border-primary hover:text-primary transition pb-0.5">
+                    Email
+                  </a>
+                  <a href={githubUrl} target="_blank" rel="noreferrer" className="text-textmain border-b-2 border-transparent hover:border-primary hover:text-primary transition pb-0.5">
+                    GitHub
+                  </a>
+                  <a href={linkedinUrl} target="_blank" rel="noreferrer" className="text-textmain border-b-2 border-transparent hover:border-primary hover:text-primary transition pb-0.5">
+                    LinkedIn
+                  </a>
                 </div>
-
-                {/* Mobile chips */}
-                <motion.div {...fadeUp(0.4)} className="sm:hidden">
-                  <div className="grid grid-cols-2 gap-3">
-                    <div className="rounded-2xl border border-primary/25 bg-primary/10 p-4">
-                      <p className="text-xs text-muted">Focus</p>
-                      <p className="font-semibold text-textmain">Full-Stack</p>
-                    </div>
-                    <div className="rounded-2xl border border-primary/25 bg-primary/10 p-4">
-                      <p className="text-xs text-muted">Mobile</p>
-                      <p className="font-semibold text-textmain">Flutter</p>
-                    </div>
-                    <div className="rounded-2xl border border-primary/25 bg-primary/10 p-4">
-                      <p className="text-xs text-muted">Web</p>
-                      <p className="font-semibold text-textmain">React</p>
-                    </div>
-                    <div className="rounded-2xl border border-primary/25 bg-primary/10 p-4">
-                      <p className="text-xs text-muted">Backend</p>
-                      <p className="font-semibold text-textmain">Laravel</p>
-                    </div>
-                  </div>
-
-                  <Link
-                    to="/projects" onClick={() => window.scrollTo(0, 0)}
-                    className="mt-3 block rounded-2xl border border-primary/25 bg-bg p-4 hover:bg-primary/10 transition"
-                  >
-                    <p className="text-xs text-muted">Featured</p>
-                    <p className="font-semibold text-textmain">TalentLoop Platform</p>
-                  </Link>
-                </motion.div>
               </div>
-            </div>
+            </motion.div>
+          </div>
+
+          {/* Right — left-accent info rows */}
+          <div className="space-y-6">
+            {cards.map((card, i) => (
+              <motion.div
+                key={card.label}
+                {...fadeUp(0.35 + i * 0.1)}
+                className={`border-l-[3px] ${card.bar} pl-5`}
+              >
+                <p className="text-xs brut-label text-muted">{card.label}</p>
+                <p className="font-bold text-textmain mt-1">{card.value}</p>
+              </motion.div>
+            ))}
+
+            <motion.div {...fadeUp(0.65)}>
+              <Link
+                to="/projects"
+                onClick={() => window.scrollTo(0, 0)}
+                className="group block border-l-[3px] border-accent pl-5 transition hover:pl-6"
+              >
+                <p className="text-xs brut-label text-accent">Featured →</p>
+                <p className="font-bold text-textmain mt-1">
+                  Aurum Realty — Real Estate Platform
+                </p>
+                <p className="text-sm text-muted mt-1">
+                  Next.js · Prisma · PostgreSQL — bilingual site with a role-based admin dashboard
+                </p>
+              </Link>
+            </motion.div>
           </div>
         </div>
       </div>
@@ -363,7 +206,7 @@ export default function Hero() {
       {/* CV MODAL */}
       {cvOpen && (
         <div
-          className="fixed inset-0 z-[10000] bg-black/40"
+          className="fixed inset-0 z-[10000] bg-ink/50"
           onMouseDown={(e) => {
             if (e.target === e.currentTarget) closeCv();
           }}
@@ -373,48 +216,28 @@ export default function Hero() {
               role="dialog"
               aria-modal="true"
               aria-labelledby="cv-title"
-              className="
-                w-full max-w-4xl rounded-3xl border border-primary/20
-                bg-white shadow-xl transition-all duration-200
-                flex flex-col h-[88vh] sm:h-[82vh]
-              "
+              className="w-full max-w-4xl border border-ink/15 bg-surface shadow-2xl flex flex-col h-[88vh] sm:h-[82vh]"
               onMouseDown={(e) => e.stopPropagation()}
             >
-              <div className="h-1 bg-gradient-to-r from-primary/60 via-primary/20 to-transparent" />
-
-              <div className="flex items-center justify-between gap-4 p-5 sm:p-6 border-b border-primary/15">
+              <div className="flex items-center justify-between gap-4 p-5 sm:p-6 border-b-[3px] border-primary">
                 <div className="min-w-0">
-                  <p className="text-xs text-muted">Document</p>
-                  <h3 id="cv-title" className="text-lg sm:text-xl font-semibold text-textmain truncate">
+                  <p className="text-xs brut-label text-muted">Document</p>
+                  <h3 id="cv-title" className="text-lg sm:text-xl font-extrabold text-textmain truncate uppercase">
                     Zahraa Salim — CV
                   </h3>
                 </div>
-                <div className="flex items-center gap-2">
-                  <a
-                    href={cvPdf}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="rounded-xl border border-primary/20 bg-white px-4 py-2 text-sm font-medium text-textmain hover:bg-primary/10 transition"
-                  >
+                <div className="flex items-center gap-4 brut-label text-sm font-bold">
+                  <a href={cvPdf} target="_blank" rel="noreferrer" className="text-textmain border-b-2 border-transparent hover:border-primary hover:text-primary transition pb-0.5">
                     Open
                   </a>
-                  <button
-                    type="button"
-                    onClick={closeCv}
-                    className="rounded-xl border border-primary/20 bg-white px-4 py-2 text-sm font-medium text-textmain hover:bg-primary/10 transition"
-                  >
+                  <button type="button" onClick={closeCv} className="text-textmain border-b-2 border-transparent hover:border-primary hover:text-primary transition pb-0.5">
                     Close
                   </button>
                 </div>
               </div>
 
               <div className="flex-1 min-h-0">
-                <iframe
-                  title="CV"
-                  src={cvPdf}
-                  className="w-full h-full"
-                  style={{ border: "none" }}
-                />
+                <iframe title="CV" src={cvPdf} className="w-full h-full" style={{ border: "none" }} />
               </div>
             </div>
           </div>
