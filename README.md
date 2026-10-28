@@ -122,9 +122,15 @@ When you add a new project with a live URL or update an existing site, regenerat
 node scripts/take-screenshots.mjs
 ```
 
-This uses your locally installed Chrome to visit each site, wait for it to fully render, and save a 1280×800 WebP screenshot to `public/screenshots/`. Then commit the new images and redeploy.
+The script asks the GitHub API for every non-fork repo that has a homepage URL set, so there is no list to maintain. By default it only captures repos that do not yet have a screenshot. It uses your locally installed Chrome to visit each site, wait for it to render, scroll through the page so lazy content and reveal animations load, and save a full-page WebP to `public/screenshots/`. Then commit the new images and redeploy.
 
-To add a new site, edit the `SITES` array in `scripts/take-screenshots.mjs`.
+```bash
+node scripts/take-screenshots.mjs              # only repos missing a screenshot
+node scripts/take-screenshots.mjs --all        # regenerate every live repo
+node scripts/take-screenshots.mjs flower-shop  # specific repo(s) only
+```
+
+To add a new site, set the **Website** field on the repo in GitHub, then re-run the script. If Chrome is installed somewhere else, set `CHROME_PATH`.
 
 ## Environment Variables
 
